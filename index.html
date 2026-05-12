@@ -1,0 +1,3063 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ERP Assistência Técnica Premium</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+      tailwind.config = {
+        theme: { extend: { colors: { primary: "#2563eb" } } },
+      };
+    </script>
+    <style>
+      @media print {
+        body * {
+          visibility: hidden;
+        }
+        #printArea,
+        #printArea * {
+          visibility: visible;
+        }
+        #printArea {
+          position: absolute;
+          inset: 0;
+          width: 100%;
+          background: white;
+          box-shadow: none !important;
+          border: 0 !important;
+        }
+        .no-print {
+          display: none !important;
+        }
+      }
+      .glass {
+        background: rgba(255, 255, 255, 0.82);
+        backdrop-filter: blur(18px);
+      }
+      .premium-card {
+        border: 1px solid rgba(226, 232, 240, 0.9);
+        box-shadow: 0 18px 45px rgba(15, 23, 42, 0.06);
+      }
+      .btn {
+        transition:
+          transform 0.15s ease,
+          box-shadow 0.15s ease,
+          background 0.15s ease;
+      }
+      .btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 12px 24px rgba(15, 23, 42, 0.12);
+      }
+      .skeleton {
+        position: relative;
+        overflow: hidden;
+        background: #e2e8f0;
+        color: transparent !important;
+      }
+      .skeleton:after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        transform: translateX(-100%);
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.7),
+          transparent
+        );
+        animation: shimmer 1.2s infinite;
+      }
+      @keyframes shimmer {
+        100% {
+          transform: translateX(100%);
+        }
+      }
+      .thermal {
+        width: 320px;
+        max-width: 320px;
+        font-family: ui-monospace, Menlo, Consolas, monospace;
+        font-size: 12px;
+        line-height: 1.35;
+      }
+    </style>
+  </head>
+  <body
+    class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-100 text-slate-800"
+  >
+    <div class="min-h-screen flex">
+      <aside
+        class="no-print hidden lg:flex fixed inset-y-0 left-0 w-72 bg-slate-950 text-white flex-col"
+      >
+        <div class="p-6 border-b border-slate-800 flex items-center gap-3">
+          <img
+            id="sidebarLogo"
+            class="hidden w-12 h-12 rounded-2xl object-cover bg-white"
+            alt="Logo"
+          />
+          <div class="min-w-0">
+            <h1 id="companyDisplayName" class="text-xl font-bold truncate">
+              Minha Empresa
+            </h1>
+            <p class="text-sm text-slate-400">ERP Assistência Técnica</p>
+          </div>
+        </div>
+        <nav class="flex-1 p-4 space-y-1 overflow-y-auto">
+          <button
+            data-page="dashboard"
+            onclick="showPage('dashboard')"
+            class="menu-btn w-full flex items-center gap-3 text-left px-4 py-3 rounded-2xl hover:bg-slate-800"
+          >
+            <i data-lucide="layout-dashboard" class="w-5"></i> Dashboard
+          </button>
+          <button
+            data-page="clientes"
+            onclick="showPage('clientes')"
+            class="menu-btn w-full flex items-center gap-3 text-left px-4 py-3 rounded-2xl hover:bg-slate-800"
+          >
+            <i data-lucide="users" class="w-5"></i> Clientes
+          </button>
+          <button
+            data-page="fornecedores"
+            onclick="showPage('fornecedores')"
+            class="menu-btn w-full flex items-center gap-3 text-left px-4 py-3 rounded-2xl hover:bg-slate-800"
+          >
+            <i data-lucide="truck" class="w-5"></i> Fornecedores
+          </button>
+          <button
+            data-page="ordens"
+            onclick="showPage('ordens')"
+            class="menu-btn w-full flex items-center gap-3 text-left px-4 py-3 rounded-2xl hover:bg-slate-800"
+          >
+            <i data-lucide="wrench" class="w-5"></i> Ordens de Serviço
+          </button>
+          <button
+            data-page="produtos"
+            onclick="showPage('produtos')"
+            class="menu-btn w-full flex items-center gap-3 text-left px-4 py-3 rounded-2xl hover:bg-slate-800"
+          >
+            <i data-lucide="package" class="w-5"></i> Produtos
+          </button>
+          <button
+            data-page="pdv"
+            onclick="showPage('pdv')"
+            class="menu-btn w-full flex items-center gap-3 text-left px-4 py-3 rounded-2xl hover:bg-slate-800"
+          >
+            <i data-lucide="shopping-cart" class="w-5"></i> Vendas / PDV
+          </button>
+          <button
+            data-page="financeiro"
+            onclick="showPage('financeiro')"
+            class="menu-btn w-full flex items-center gap-3 text-left px-4 py-3 rounded-2xl hover:bg-slate-800"
+          >
+            <i data-lucide="wallet" class="w-5"></i> Financeiro
+          </button>
+          <button
+            data-page="relatorios"
+            onclick="showPage('relatorios')"
+            class="menu-btn w-full flex items-center gap-3 text-left px-4 py-3 rounded-2xl hover:bg-slate-800"
+          >
+            <i data-lucide="bar-chart-3" class="w-5"></i> Relatórios
+          </button>
+          <button
+            data-page="configuracoes"
+            onclick="showPage('configuracoes')"
+            class="menu-btn w-full flex items-center gap-3 text-left px-4 py-3 rounded-2xl hover:bg-slate-800"
+          >
+            <i data-lucide="settings" class="w-5"></i> Configurações
+          </button>
+        </nav>
+        <div class="p-4 border-t border-slate-800 text-xs text-slate-400">
+          localStorage ativo
+        </div>
+      </aside>
+
+      <main class="flex-1 lg:ml-72 min-w-0">
+        <header
+          class="no-print sticky top-0 z-30 glass border-b px-4 md:px-6 py-4 flex items-center justify-between gap-4"
+        >
+          <div class="min-w-0 flex items-center gap-3">
+            <img
+              id="headerLogo"
+              class="hidden w-11 h-11 rounded-2xl object-cover bg-white border"
+              alt="Logo"
+            />
+            <div>
+              <h2 id="pageTitle" class="text-xl md:text-2xl font-bold truncate">
+                Dashboard
+              </h2>
+              <p id="companyHeaderName" class="text-sm text-slate-500 truncate">
+                Sistema premium
+              </p>
+            </div>
+          </div>
+          <div class="flex gap-2">
+            <button
+              onclick="openOrderForm()"
+              class="btn hidden sm:flex items-center gap-2 bg-primary text-white px-4 py-2 rounded-2xl"
+            >
+              <i data-lucide="plus" class="w-4"></i> Nova OS</button
+            ><button
+              onclick="showPage('pdv')"
+              class="btn bg-slate-950 text-white px-4 py-2 rounded-2xl"
+            >
+              Abrir PDV
+            </button>
+          </div>
+        </header>
+
+        <div
+          class="no-print lg:hidden fixed bottom-0 inset-x-0 bg-white border-t grid grid-cols-5 text-xs z-50 shadow-lg"
+        >
+          <button onclick="showPage('dashboard')" class="py-2">
+            📊<br />Início</button
+          ><button onclick="showPage('ordens')" class="py-2">🛠️<br />OS</button
+          ><button onclick="showPage('produtos')" class="py-2">
+            📦<br />Prod.</button
+          ><button onclick="showPage('pdv')" class="py-2">🛒<br />PDV</button
+          ><button onclick="showPage('financeiro')" class="py-2">
+            💰<br />Fin.
+          </button>
+        </div>
+
+        <section id="dashboard" class="page p-4 md:p-6 pb-24 lg:pb-6 space-y-6">
+          <div
+            class="rounded-3xl bg-gradient-to-r from-slate-950 via-blue-950 to-blue-700 text-white p-6 shadow-xl overflow-hidden relative"
+          >
+            <div
+              class="absolute right-0 top-0 w-72 h-72 bg-white opacity-10 rounded-full blur-3xl"
+            ></div>
+            <div
+              class="relative flex flex-col md:flex-row md:items-center md:justify-between gap-4"
+            >
+              <div>
+                <p class="text-blue-100">Painel executivo</p>
+                <h3 class="text-2xl md:text-3xl font-bold">
+                  Gestão completa da assistência
+                </h3>
+              </div>
+              <div class="flex flex-wrap gap-2">
+                <button
+                  onclick="openOrderForm()"
+                  class="btn bg-white text-slate-900 px-4 py-2 rounded-2xl"
+                >
+                  Nova OS</button
+                ><button
+                  onclick="showPage('pdv')"
+                  class="btn bg-blue-500 text-white px-4 py-2 rounded-2xl"
+                >
+                  Nova venda</button
+                ><button
+                  onclick="openClientModal()"
+                  class="btn bg-white/10 border border-white/20 px-4 py-2 rounded-2xl"
+                >
+                  Novo cliente
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div id="skeletonBar" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div class="skeleton h-28 rounded-2xl"></div>
+            <div class="skeleton h-28 rounded-2xl"></div>
+            <div class="skeleton h-28 rounded-2xl"></div>
+            <div class="skeleton h-28 rounded-2xl"></div>
+          </div>
+          <div id="dashboardReal" class="hidden space-y-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+              <div class="premium-card glass rounded-2xl p-5">
+                <p class="text-sm text-slate-500">Total de OS</p>
+                <h3 id="dashTotalOS" class="text-3xl font-bold mt-2">0</h3>
+              </div>
+              <div class="premium-card glass rounded-2xl p-5">
+                <p class="text-sm text-slate-500">Vendido hoje</p>
+                <h3
+                  id="dashVendidoHoje"
+                  class="text-2xl font-bold mt-2 text-green-600"
+                >
+                  R$ 0,00
+                </h3>
+              </div>
+              <div class="premium-card glass rounded-2xl p-5">
+                <p class="text-sm text-slate-500">Ticket médio</p>
+                <h3
+                  id="dashTicket"
+                  class="text-2xl font-bold mt-2 text-blue-600"
+                >
+                  R$ 0,00
+                </h3>
+              </div>
+              <div class="premium-card glass rounded-2xl p-5">
+                <p class="text-sm text-slate-500">Lucro estimado</p>
+                <h3 id="dashLucro" class="text-2xl font-bold mt-2">R$ 0,00</h3>
+              </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <div class="bg-white rounded-2xl p-5 premium-card">
+                <p class="text-sm text-slate-500">Em análise</p>
+                <h3 id="dashAnalise" class="text-3xl font-bold">0</h3>
+              </div>
+              <div class="bg-white rounded-2xl p-5 premium-card">
+                <p class="text-sm text-slate-500">Em manutenção</p>
+                <h3 id="dashManutencao" class="text-3xl font-bold">0</h3>
+              </div>
+              <div class="bg-white rounded-2xl p-5 premium-card">
+                <p class="text-sm text-slate-500">Aguardando peça</p>
+                <h3 id="dashPeca" class="text-3xl font-bold">0</h3>
+              </div>
+              <div class="bg-white rounded-2xl p-5 premium-card">
+                <p class="text-sm text-slate-500">OS finalizadas no mês</p>
+                <h3 id="dashFinalMes" class="text-3xl font-bold">0</h3>
+              </div>
+            </div>
+            <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+              <div class="xl:col-span-2 bg-white rounded-2xl premium-card p-5">
+                <div class="flex justify-between mb-4">
+                  <h3 class="font-bold text-lg">Faturamento</h3>
+                  <select
+                    id="chartRange"
+                    onchange="renderDashboard()"
+                    class="border rounded-xl px-3 py-2"
+                  >
+                    <option value="7">7 dias</option>
+                    <option value="30">30 dias</option>
+                  </select>
+                </div>
+                <div id="salesChart" class="h-56 flex items-end gap-2"></div>
+              </div>
+              <div class="bg-white rounded-2xl premium-card p-5">
+                <h3 class="font-bold text-lg mb-4">Produtos mais vendidos</h3>
+                <div id="dashTopProducts" class="space-y-3"></div>
+              </div>
+            </div>
+            <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+              <div
+                class="xl:col-span-2 bg-white rounded-2xl premium-card overflow-hidden"
+              >
+                <div class="p-5 border-b flex justify-between">
+                  <div>
+                    <h3 class="text-lg font-bold">Últimas OS</h3>
+                    <p class="text-sm text-slate-500">Ordens recentes</p>
+                  </div>
+                  <button
+                    onclick="showPage('ordens')"
+                    class="text-primary font-medium"
+                  >
+                    Ver todas
+                  </button>
+                </div>
+                <div class="overflow-x-auto">
+                  <table class="w-full text-sm">
+                    <thead class="bg-slate-50 text-slate-500">
+                      <tr>
+                        <th class="text-left px-5 py-3">OS</th>
+                        <th class="text-left px-5 py-3">Cliente</th>
+                        <th class="text-left px-5 py-3">Aparelho</th>
+                        <th class="text-left px-5 py-3">Status</th>
+                        <th class="text-left px-5 py-3">Valor</th>
+                      </tr>
+                    </thead>
+                    <tbody id="dashboardOrders"></tbody>
+                  </table>
+                </div>
+              </div>
+              <div class="bg-white rounded-2xl premium-card p-5">
+                <h3 class="font-bold text-lg mb-4">Fluxo financeiro</h3>
+                <p class="text-sm text-slate-500">A receber</p>
+                <h3
+                  id="dashReceber"
+                  class="text-green-600 font-bold text-xl mb-3"
+                >
+                  R$ 0,00
+                </h3>
+                <p class="text-sm text-slate-500">A pagar</p>
+                <h3 id="dashPagar" class="text-red-600 font-bold text-xl">
+                  R$ 0,00
+                </h3>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="clientes" class="page hidden p-4 md:p-6 pb-24 lg:pb-6">
+          <div class="bg-white rounded-2xl premium-card overflow-hidden">
+            <div
+              class="p-5 border-b flex flex-col md:flex-row md:justify-between gap-4"
+            >
+              <div>
+                <h3 class="text-xl font-bold">Clientes</h3>
+                <p class="text-sm text-slate-500">Cadastro e relacionamento</p>
+              </div>
+              <button
+                onclick="openClientModal()"
+                class="btn bg-primary text-white px-4 py-2 rounded-2xl"
+              >
+                Novo cliente
+              </button>
+            </div>
+            <div class="p-5">
+              <input
+                id="clientSearch"
+                oninput="renderClients()"
+                class="w-full border rounded-2xl px-4 py-3"
+                placeholder="Buscar cliente"
+              />
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-sm">
+                <thead class="bg-slate-50 text-slate-500">
+                  <tr>
+                    <th class="text-left px-5 py-3">Nome</th>
+                    <th class="text-left px-5 py-3">Telefone</th>
+                    <th class="text-left px-5 py-3">Email</th>
+                    <th class="text-left px-5 py-3">CPF</th>
+                    <th class="text-right px-5 py-3">Ações</th>
+                  </tr>
+                </thead>
+                <tbody id="clientsTable"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <section id="fornecedores" class="page hidden p-4 md:p-6 pb-24 lg:pb-6">
+          <div class="bg-white rounded-2xl premium-card overflow-hidden">
+            <div
+              class="p-5 border-b flex flex-col md:flex-row md:justify-between gap-4"
+            >
+              <div>
+                <h3 class="text-xl font-bold">Fornecedores</h3>
+                <p class="text-sm text-slate-500">
+                  Empresas, parceiros e prestadores que você paga ou contrata
+                </p>
+              </div>
+              <button
+                onclick="openSupplierModal()"
+                class="btn bg-primary text-white px-4 py-2 rounded-2xl"
+              >
+                Novo fornecedor
+              </button>
+            </div>
+            <div class="p-5">
+              <input
+                id="supplierSearch"
+                oninput="renderSuppliers()"
+                class="w-full border rounded-2xl px-4 py-3"
+                placeholder="Buscar fornecedor"
+              />
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-sm">
+                <thead class="bg-slate-50 text-slate-500">
+                  <tr>
+                    <th class="text-left px-5 py-3">Nome</th>
+                    <th class="text-left px-5 py-3">Telefone</th>
+                    <th class="text-left px-5 py-3">Categoria</th>
+                    <th class="text-left px-5 py-3">Documento</th>
+                    <th class="text-right px-5 py-3">Ações</th>
+                  </tr>
+                </thead>
+                <tbody id="suppliersTable"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <section id="ordens" class="page hidden p-4 md:p-6 pb-24 lg:pb-6">
+          <div class="bg-white rounded-2xl premium-card overflow-hidden">
+            <div
+              class="p-5 border-b flex flex-col md:flex-row md:justify-between gap-4"
+            >
+              <div>
+                <h3 class="text-xl font-bold">Ordens de Serviço</h3>
+                <p class="text-sm text-slate-500">
+                  Assistência técnica integrada ao financeiro
+                </p>
+              </div>
+              <button
+                onclick="openOrderForm()"
+                class="btn bg-primary text-white px-4 py-2 rounded-2xl"
+              >
+                Criar OS
+              </button>
+            </div>
+            <div class="p-5 grid grid-cols-1 md:grid-cols-2 gap-4">
+              <input
+                id="orderSearch"
+                oninput="renderOrders()"
+                class="border rounded-2xl px-4 py-3"
+                placeholder="Buscar OS"
+              /><select
+                id="statusFilter"
+                onchange="renderOrders()"
+                class="border rounded-2xl px-4 py-3"
+              >
+                <option value="">Todos</option>
+                <option>Em análise</option>
+                <option>Em manutenção</option>
+                <option>Aguardando peça</option>
+                <option>Finalizado</option>
+                <option>Entregue</option>
+              </select>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-sm">
+                <thead class="bg-slate-50 text-slate-500">
+                  <tr>
+                    <th class="text-left px-5 py-3">Número</th>
+                    <th class="text-left px-5 py-3">Cliente</th>
+                    <th class="text-left px-5 py-3">Aparelho</th>
+                    <th class="text-left px-5 py-3">Status</th>
+                    <th class="text-left px-5 py-3">Valor</th>
+                    <th class="text-right px-5 py-3">Ações</th>
+                  </tr>
+                </thead>
+                <tbody id="ordersTable"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <section id="produtos" class="page hidden p-4 md:p-6 pb-24 lg:pb-6">
+          <div class="bg-white rounded-2xl premium-card overflow-hidden">
+            <div
+              class="p-5 border-b flex flex-col md:flex-row md:justify-between gap-4"
+            >
+              <div>
+                <h3 class="text-xl font-bold">Produtos e Estoque</h3>
+                <p class="text-sm text-slate-500">
+                  Controle inteligente com alerta e histórico
+                </p>
+              </div>
+              <div class="flex gap-2">
+                <button
+                  onclick="openStockModal()"
+                  class="btn bg-slate-900 text-white px-4 py-2 rounded-2xl"
+                >
+                  Entrada estoque</button
+                ><button
+                  onclick="openProductModal()"
+                  class="btn bg-primary text-white px-4 py-2 rounded-2xl"
+                >
+                  Novo produto
+                </button>
+              </div>
+            </div>
+            <div class="p-5">
+              <input
+                id="productSearch"
+                oninput="renderProducts()"
+                class="w-full border rounded-2xl px-4 py-3"
+                placeholder="Buscar produto, SKU ou categoria"
+              />
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-sm">
+                <thead class="bg-slate-50 text-slate-500">
+                  <tr>
+                    <th class="text-left px-5 py-3">Produto</th>
+                    <th class="text-left px-5 py-3">SKU</th>
+                    <th class="text-left px-5 py-3">Categoria</th>
+                    <th class="text-left px-5 py-3">Custo</th>
+                    <th class="text-left px-5 py-3">Venda</th>
+                    <th class="text-left px-5 py-3">Estoque</th>
+                    <th class="text-right px-5 py-3">Ações</th>
+                  </tr>
+                </thead>
+                <tbody id="productsTable"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <section id="pdv" class="page hidden p-4 md:p-6 pb-24 lg:pb-6">
+          <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+            <div
+              class="xl:col-span-2 bg-white rounded-2xl premium-card overflow-hidden"
+            >
+              <div class="p-5 border-b">
+                <h3 class="text-xl font-bold">PDV Profissional</h3>
+                <p class="text-sm text-slate-500">
+                  Código de barras simulado + ENTER adiciona produto
+                </p>
+              </div>
+              <div class="p-5 grid grid-cols-1 md:grid-cols-2 gap-3">
+                <input
+                  id="barcodeInput"
+                  onkeydown="barcodeEnter(event)"
+                  class="border rounded-2xl px-4 py-3"
+                  placeholder="Leitor de código de barras / SKU"
+                /><input
+                  id="pdvSearch"
+                  oninput="renderPDVProducts()"
+                  class="border rounded-2xl px-4 py-3"
+                  placeholder="Buscar produto"
+                />
+              </div>
+              <div
+                id="pdvProducts"
+                class="p-5 pt-0 grid grid-cols-1 md:grid-cols-2 gap-3"
+              ></div>
+            </div>
+            <div
+              class="bg-white rounded-2xl premium-card p-5 h-fit sticky top-24"
+            >
+              <h3 class="text-xl font-bold mb-4">Carrinho</h3>
+              <div
+                id="cartItems"
+                class="space-y-3 max-h-72 overflow-y-auto"
+              ></div>
+              <div class="border-t mt-4 pt-4 space-y-3">
+                <div class="flex justify-between text-lg">
+                  <span>Total</span><b id="cartTotal">R$ 0,00</b>
+                </div>
+                <select
+                  id="saleClient"
+                  class="w-full border rounded-2xl px-4 py-3"
+                >
+                  <option value="">Cliente opcional</option>
+                </select>
+                <div class="grid grid-cols-3 gap-2">
+                  <button
+                    onclick="setPayment('Pix')"
+                    class="pay-btn btn border rounded-2xl py-2"
+                  >
+                    PIX</button
+                  ><button
+                    onclick="setPayment('Dinheiro')"
+                    class="pay-btn btn border rounded-2xl py-2"
+                  >
+                    Dinheiro</button
+                  ><button
+                    onclick="setPayment('Cartão')"
+                    class="pay-btn btn border rounded-2xl py-2"
+                  >
+                    Cartão</button
+                  ><button
+                    onclick="setPayment('PicPay PJ')"
+                    class="pay-btn btn border rounded-2xl py-2 md:col-span-3"
+                  >
+                    PicPay PJ
+                  </button>
+                </div>
+                <input
+                  id="amountPaid"
+                  oninput="renderCart()"
+                  type="number"
+                  step="0.01"
+                  class="w-full border rounded-2xl px-4 py-3"
+                  placeholder="Valor recebido"
+                />
+                <div class="flex justify-between">
+                  <span>Troco</span><b id="changeValue">R$ 0,00</b>
+                </div>
+                <button
+                  onclick="finishSale()"
+                  class="btn w-full bg-green-600 text-white rounded-2xl py-3 font-bold"
+                >
+                  FINALIZAR VENDA
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section
+          id="financeiro"
+          class="page hidden p-4 md:p-6 pb-24 lg:pb-6 space-y-5"
+        >
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div class="bg-white rounded-2xl p-5 premium-card">
+              <p class="text-sm text-slate-500">Receita</p>
+              <h3 id="finReceita" class="text-2xl font-bold text-green-600">
+                R$ 0,00
+              </h3>
+            </div>
+            <div class="bg-white rounded-2xl p-5 premium-card">
+              <p class="text-sm text-slate-500">Despesa</p>
+              <h3 id="finDespesa" class="text-2xl font-bold text-red-600">
+                R$ 0,00
+              </h3>
+            </div>
+            <div class="bg-white rounded-2xl p-5 premium-card">
+              <p class="text-sm text-slate-500">A receber</p>
+              <h3 id="finReceber" class="text-2xl font-bold text-green-600">
+                R$ 0,00
+              </h3>
+            </div>
+            <div class="bg-white rounded-2xl p-5 premium-card">
+              <p class="text-sm text-slate-500">Lucro</p>
+              <h3 id="finLucro" class="text-2xl font-bold text-blue-600">
+                R$ 0,00
+              </h3>
+            </div>
+          </div>
+          <div class="bg-white rounded-2xl premium-card p-5">
+            <div class="flex justify-between mb-4">
+              <h3 class="font-bold text-lg">Fluxo de caixa</h3>
+              <div class="flex gap-2">
+                <input
+                  id="financeStart"
+                  type="date"
+                  onchange="renderFinance()"
+                  class="border rounded-xl px-3 py-2"
+                /><input
+                  id="financeEnd"
+                  type="date"
+                  onchange="renderFinance()"
+                  class="border rounded-xl px-3 py-2"
+                />
+              </div>
+            </div>
+            <div id="cashChart" class="h-44 flex items-end gap-2"></div>
+          </div>
+          <div class="bg-white rounded-2xl premium-card overflow-hidden">
+            <div class="p-5 border-b flex justify-between">
+              <div>
+                <h3 class="text-xl font-bold">Financeiro</h3>
+                <p class="text-sm text-slate-500">
+                  Receitas, despesas e recebimentos
+                </p>
+              </div>
+              <button
+                onclick="openFinanceModal()"
+                class="btn bg-primary text-white px-4 py-2 rounded-2xl"
+              >
+                Lançamento
+              </button>
+            </div>
+            <div class="p-5 flex gap-2">
+              <button
+                id="tabReceber"
+                onclick="setFinanceTab('Receber')"
+                class="px-4 py-2 rounded-2xl"
+              >
+                Receita / Receber</button
+              ><button
+                id="tabPagar"
+                onclick="setFinanceTab('Pagar')"
+                class="px-4 py-2 rounded-2xl"
+              >
+                Despesa / Pagar
+              </button>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-sm">
+                <thead
+                  id="financeHead"
+                  class="bg-slate-50 text-slate-500"
+                ></thead>
+                <tbody id="financeTable"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <section
+          id="relatorios"
+          class="page hidden p-4 md:p-6 pb-24 lg:pb-6 space-y-6"
+        >
+          <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
+            <div class="bg-white rounded-2xl premium-card p-5">
+              <p class="text-sm text-slate-500">Vendas no mês</p>
+              <h3 id="repVendas" class="text-2xl font-bold text-green-600">
+                R$ 0,00
+              </h3>
+            </div>
+            <div class="bg-white rounded-2xl premium-card p-5">
+              <p class="text-sm text-slate-500">Produtos vendidos</p>
+              <h3 id="repProdutos" class="text-2xl font-bold">0</h3>
+            </div>
+            <div class="bg-white rounded-2xl premium-card p-5">
+              <p class="text-sm text-slate-500">Lucro mensal</p>
+              <h3 id="repLucro" class="text-2xl font-bold text-blue-600">
+                R$ 0,00
+              </h3>
+            </div>
+            <div class="bg-white rounded-2xl premium-card p-5">
+              <p class="text-sm text-slate-500">OS finalizadas</p>
+              <h3 id="repOS" class="text-2xl font-bold">0</h3>
+            </div>
+            <div class="bg-white rounded-2xl premium-card p-5">
+              <p class="text-sm text-slate-500">Doações</p>
+              <h3 id="repDoacoes" class="text-2xl font-bold text-purple-600">
+                R$ 0,00
+              </h3>
+            </div>
+          </div>
+          <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+            <div class="bg-white rounded-2xl premium-card p-5">
+              <h3 class="font-bold text-lg mb-4">Produtos mais vendidos</h3>
+              <div id="topProducts" class="space-y-3"></div>
+            </div>
+            <div class="bg-white rounded-2xl premium-card p-5">
+              <h3 class="font-bold text-lg mb-4">Vendas recentes</h3>
+              <div id="salesList" class="space-y-3"></div>
+            </div>
+          </div>
+        </section>
+
+        <section id="formOS" class="page hidden p-4 md:p-6 pb-24 lg:pb-6">
+          <div
+            class="bg-white rounded-2xl premium-card max-w-6xl overflow-hidden"
+          >
+            <div class="p-5 border-b">
+              <h3 id="orderFormTitle" class="text-xl font-bold">Nova OS</h3>
+            </div>
+            <form
+              onsubmit="saveOrder(event)"
+              class="p-5 grid grid-cols-1 md:grid-cols-2 gap-4"
+            >
+              <input type="hidden" id="orderId" /><select
+                id="orderClient"
+                required
+                class="border rounded-2xl px-4 py-3"
+              ></select
+              ><input
+                id="deviceBrand"
+                required
+                placeholder="Marca"
+                class="border rounded-2xl px-4 py-3"
+              /><input
+                id="deviceModel"
+                required
+                placeholder="Modelo"
+                class="border rounded-2xl px-4 py-3"
+              /><input
+                id="deviceColor"
+                placeholder="Cor"
+                class="border rounded-2xl px-4 py-3"
+              /><textarea
+                id="reportedProblem"
+                required
+                placeholder="Problema"
+                class="md:col-span-2 border rounded-2xl px-4 py-3"
+              ></textarea
+              ><textarea
+                id="technicalDiagnosis"
+                placeholder="Diagnóstico"
+                class="md:col-span-2 border rounded-2xl px-4 py-3"
+              ></textarea
+              ><input
+                id="serviceValue"
+                type="number"
+                step="0.01"
+                placeholder="Valor"
+                class="border rounded-2xl px-4 py-3"
+              /><select id="orderStatus" class="border rounded-2xl px-4 py-3">
+                <option>Em análise</option>
+                <option>Em manutenção</option>
+                <option>Aguardando peça</option>
+                <option>Finalizado</option>
+                <option>Entregue</option></select
+              ><input
+                id="entryDate"
+                type="date"
+                required
+                class="border rounded-2xl px-4 py-3"
+              /><input
+                id="expectedDate"
+                type="date"
+                class="border rounded-2xl px-4 py-3"
+              /><textarea
+                id="orderNotes"
+                placeholder="Observações"
+                class="md:col-span-2 border rounded-2xl px-4 py-3"
+              ></textarea>
+              <div class="md:col-span-2 flex justify-end gap-3">
+                <button
+                  type="button"
+                  onclick="showPage('ordens')"
+                  class="px-4 py-2 border rounded-2xl"
+                >
+                  Cancelar</button
+                ><button class="bg-primary text-white px-4 py-2 rounded-2xl">
+                  Salvar OS
+                </button>
+              </div>
+            </form>
+          </div>
+        </section>
+
+        <section id="detalhesOS" class="page hidden p-4 md:p-6 pb-24 lg:pb-6">
+          <div
+            id="orderDetails"
+            class="bg-white rounded-2xl premium-card p-6"
+          ></div>
+        </section>
+        <section id="impressao" class="page hidden p-4 md:p-6 pb-24 lg:pb-6">
+          <div class="no-print mb-4 flex gap-2">
+            <button
+              onclick="setPrintMode('a4')"
+              class="bg-slate-900 text-white px-4 py-2 rounded-2xl"
+            >
+              A4</button
+            ><button
+              onclick="setPrintMode('thermal')"
+              class="bg-slate-900 text-white px-4 py-2 rounded-2xl"
+            >
+              Térmica</button
+            ><button
+              onclick="window.print()"
+              class="bg-primary text-white px-4 py-2 rounded-2xl"
+            >
+              Imprimir
+            </button>
+          </div>
+          <div
+            id="printArea"
+            class="bg-white rounded-2xl premium-card p-8 max-w-4xl"
+          ></div>
+        </section>
+
+        <section
+          id="configuracoes"
+          class="page hidden p-4 md:p-6 pb-24 lg:pb-6"
+        >
+          <div
+            class="bg-white rounded-2xl premium-card max-w-3xl overflow-hidden"
+          >
+            <div class="p-5 border-b">
+              <h3 class="text-xl font-bold">Configurações</h3>
+            </div>
+            <form onsubmit="saveSettings(event)" class="p-5 space-y-4">
+              <input
+                id="companyName"
+                placeholder="Nome da empresa"
+                class="w-full border rounded-2xl px-4 py-3"
+              /><input
+                id="companyPhone"
+                oninput="this.value = maskPhone(this.value)"
+                placeholder="Telefone"
+                class="w-full border rounded-2xl px-4 py-3"
+              /><input
+                id="companyAddress"
+                placeholder="Endereço"
+                class="w-full border rounded-2xl px-4 py-3"
+              />
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <input
+                  id="picpayLink"
+                  placeholder="Link de pagamento PicPay PJ"
+                  class="w-full border rounded-2xl px-4 py-3"
+                /><input
+                  id="picpayPixKey"
+                  placeholder="Chave Pix / referência PicPay"
+                  class="w-full border rounded-2xl px-4 py-3"
+                />
+              </div>
+              <input
+                type="file"
+                accept="image/*"
+                onchange="importLogo(event)"
+                class="w-full border rounded-2xl px-4 py-3"
+              />
+              <div class="flex gap-3 items-center">
+                <img
+                  id="logoPreview"
+                  class="hidden w-20 h-20 rounded-2xl object-cover border"
+                /><button
+                  type="button"
+                  onclick="removeLogo()"
+                  class="border px-4 py-2 rounded-2xl"
+                >
+                  Remover logo
+                </button>
+              </div>
+              <button class="bg-primary text-white px-4 py-2 rounded-2xl">
+                Salvar
+              </button>
+            </form>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <div
+      id="clientModal"
+      class="hidden no-print fixed inset-0 bg-black/50 z-50 items-center justify-center p-4"
+    >
+      <div class="bg-white rounded-2xl w-full max-w-xl overflow-hidden">
+        <div class="p-5 border-b flex justify-between">
+          <h3 id="clientModalTitle" class="font-bold text-xl">Novo Cliente</h3>
+          <button onclick="closeModal('clientModal')" class="text-2xl">
+            &times;
+          </button>
+        </div>
+        <form onsubmit="saveClient(event)" class="p-5 space-y-4">
+          <input type="hidden" id="clientId" /><input
+            id="clientName"
+            required
+            placeholder="Nome"
+            class="w-full border rounded-2xl px-4 py-3"
+          /><input
+            id="clientPhone"
+            required
+            oninput="this.value = maskPhone(this.value)"
+            placeholder="Telefone"
+            class="w-full border rounded-2xl px-4 py-3"
+          /><input
+            id="clientEmail"
+            placeholder="Email"
+            class="w-full border rounded-2xl px-4 py-3"
+          /><input
+            id="clientCpf"
+            oninput="this.value = maskCpf(this.value)"
+            placeholder="CPF"
+            class="w-full border rounded-2xl px-4 py-3"
+          />
+          <div class="flex justify-end gap-2">
+            <button
+              type="button"
+              onclick="closeModal('clientModal')"
+              class="border px-4 py-2 rounded-2xl"
+            >
+              Cancelar</button
+            ><button class="bg-primary text-white px-4 py-2 rounded-2xl">
+              Salvar
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+    <div
+      id="productModal"
+      class="hidden no-print fixed inset-0 bg-black/50 z-50 items-center justify-center p-4"
+    >
+      <div class="bg-white rounded-2xl w-full max-w-2xl overflow-hidden">
+        <div class="p-5 border-b flex justify-between">
+          <h3 id="productModalTitle" class="font-bold text-xl">Produto</h3>
+          <button onclick="closeModal('productModal')" class="text-2xl">
+            &times;
+          </button>
+        </div>
+        <form
+          onsubmit="saveProduct(event)"
+          class="p-5 grid grid-cols-1 md:grid-cols-2 gap-4"
+        >
+          <input type="hidden" id="productId" /><input
+            id="productName"
+            required
+            placeholder="Nome"
+            class="border rounded-2xl px-4 py-3"
+          /><input
+            id="productSku"
+            required
+            placeholder="SKU / código de barras"
+            class="border rounded-2xl px-4 py-3"
+          /><input
+            id="productCategory"
+            placeholder="Categoria"
+            class="border rounded-2xl px-4 py-3"
+          /><input
+            id="productCost"
+            type="number"
+            step="0.01"
+            placeholder="Custo"
+            class="border rounded-2xl px-4 py-3"
+          /><input
+            id="productPrice"
+            required
+            type="number"
+            step="0.01"
+            placeholder="Preço venda"
+            class="border rounded-2xl px-4 py-3"
+          /><input
+            id="productStock"
+            required
+            type="number"
+            placeholder="Estoque"
+            class="border rounded-2xl px-4 py-3"
+          /><input
+            id="productMinStock"
+            type="number"
+            placeholder="Estoque mínimo"
+            class="border rounded-2xl px-4 py-3"
+          /><textarea
+            id="productDescription"
+            placeholder="Descrição"
+            class="md:col-span-2 border rounded-2xl px-4 py-3"
+          ></textarea>
+          <div class="md:col-span-2 flex justify-end gap-2">
+            <button
+              type="button"
+              onclick="closeModal('productModal')"
+              class="border px-4 py-2 rounded-2xl"
+            >
+              Cancelar</button
+            ><button class="bg-primary text-white px-4 py-2 rounded-2xl">
+              Salvar
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+    <div
+      id="stockModal"
+      class="hidden no-print fixed inset-0 bg-black/50 z-50 items-center justify-center p-4"
+    >
+      <div class="bg-white rounded-2xl w-full max-w-xl overflow-hidden">
+        <div class="p-5 border-b flex justify-between">
+          <h3 class="font-bold text-xl">Entrada manual de estoque</h3>
+          <button onclick="closeModal('stockModal')" class="text-2xl">
+            &times;
+          </button>
+        </div>
+        <form onsubmit="saveStockEntry(event)" class="p-5 space-y-4">
+          <select
+            id="stockProduct"
+            class="w-full border rounded-2xl px-4 py-3"
+          ></select
+          ><input
+            id="stockQty"
+            type="number"
+            min="1"
+            required
+            placeholder="Quantidade"
+            class="w-full border rounded-2xl px-4 py-3"
+          /><input
+            id="stockNote"
+            placeholder="Observação"
+            class="w-full border rounded-2xl px-4 py-3"
+          />
+          <div class="flex justify-end">
+            <button class="bg-primary text-white px-4 py-2 rounded-2xl">
+              Adicionar estoque
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+    <div
+      id="financeModal"
+      class="hidden no-print fixed inset-0 bg-black/50 z-50 items-center justify-center p-4"
+    >
+      <div class="bg-white rounded-2xl w-full max-w-xl overflow-hidden">
+        <div class="p-5 border-b flex justify-between">
+          <h3 id="financeModalTitle" class="font-bold text-xl">Lançamento</h3>
+          <button onclick="closeModal('financeModal')" class="text-2xl">
+            &times;
+          </button>
+        </div>
+        <form onsubmit="saveFinance(event)" class="p-5 space-y-4">
+          <input type="hidden" id="financeId" /><select
+            id="financeType"
+            class="w-full border rounded-2xl px-4 py-3"
+          >
+            <option>Receber</option>
+            <option>Pagar</option></select
+          ><select
+            id="financeOrigin"
+            class="w-full border rounded-2xl px-4 py-3"
+          >
+            <option>Manual</option>
+            <option>Doação</option>
+            <option>PicPay PJ</option>
+            <option>Despesa</option></select
+          ><input
+            id="financeDescription"
+            required
+            placeholder="Descrição"
+            class="w-full border rounded-2xl px-4 py-3"
+          /><input
+            id="financeValue"
+            required
+            type="number"
+            step="0.01"
+            placeholder="Valor"
+            class="w-full border rounded-2xl px-4 py-3"
+          /><input
+            id="financeDate"
+            required
+            type="date"
+            class="w-full border rounded-2xl px-4 py-3"
+          /><input
+            id="financeInstallments"
+            type="number"
+            min="1"
+            value="1"
+            placeholder="Quantidade de parcelas"
+            class="w-full border rounded-2xl px-4 py-3"
+          /><textarea
+            id="financeNotes"
+            placeholder="Observação / histórico do lançamento"
+            class="w-full border rounded-2xl px-4 py-3"
+          ></textarea
+          ><select
+            id="financeStatus"
+            class="w-full border rounded-2xl px-4 py-3"
+          >
+            <option>Pendente</option>
+            <option>Recebido</option>
+            <option>Pago</option></select
+          ><select
+            id="financeClient"
+            class="w-full border rounded-2xl px-4 py-3"
+          ></select
+          ><select
+            id="financeSupplier"
+            class="w-full border rounded-2xl px-4 py-3"
+          ></select
+          ><select
+            id="financeOrder"
+            class="w-full border rounded-2xl px-4 py-3"
+          ></select>
+          <div class="flex justify-end">
+            <button class="bg-primary text-white px-4 py-2 rounded-2xl">
+              Salvar
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+    <div
+      id="supplierModal"
+      class="hidden no-print fixed inset-0 bg-black/50 z-50 items-center justify-center p-4"
+    >
+      <div class="bg-white rounded-2xl w-full max-w-xl overflow-hidden">
+        <div class="p-5 border-b flex justify-between">
+          <h3 id="supplierModalTitle" class="font-bold text-xl">
+            Novo Fornecedor
+          </h3>
+          <button onclick="closeModal('supplierModal')" class="text-2xl">
+            &times;
+          </button>
+        </div>
+        <form onsubmit="saveSupplier(event)" class="p-5 space-y-4">
+          <input type="hidden" id="supplierId" /><input
+            id="supplierName"
+            required
+            placeholder="Nome / Empresa"
+            class="w-full border rounded-2xl px-4 py-3"
+          /><input
+            id="supplierPhone"
+            oninput="this.value = maskPhone(this.value)"
+            placeholder="Telefone"
+            class="w-full border rounded-2xl px-4 py-3"
+          /><input
+            id="supplierCategory"
+            placeholder="Categoria: peças, aluguel, energia, terceirizado..."
+            class="w-full border rounded-2xl px-4 py-3"
+          /><input
+            id="supplierDocument"
+            placeholder="CNPJ / CPF / Documento"
+            class="w-full border rounded-2xl px-4 py-3"
+          /><textarea
+            id="supplierNotes"
+            placeholder="Observações"
+            class="w-full border rounded-2xl px-4 py-3"
+          ></textarea>
+          <div class="flex justify-end gap-2">
+            <button
+              type="button"
+              onclick="closeModal('supplierModal')"
+              class="border px-4 py-2 rounded-2xl"
+            >
+              Cancelar</button
+            ><button class="bg-primary text-white px-4 py-2 rounded-2xl">
+              Salvar
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+    <div
+      id="productHistoryModal"
+      class="hidden no-print fixed inset-0 bg-black/50 z-50 items-center justify-center p-4"
+    >
+      <div class="bg-white rounded-2xl w-full max-w-3xl overflow-hidden">
+        <div class="p-5 border-b flex justify-between">
+          <div>
+            <h3 id="productHistoryTitle" class="font-bold text-xl">
+              Histórico do produto
+            </h3>
+            <p id="productHistorySubtitle" class="text-sm text-slate-500"></p>
+          </div>
+          <button onclick="closeModal('productHistoryModal')" class="text-2xl">
+            &times;
+          </button>
+        </div>
+        <div
+          id="productHistoryContent"
+          class="p-5 space-y-4 max-h-[70vh] overflow-y-auto"
+        ></div>
+      </div>
+    </div>
+    <div
+      id="toast"
+      class="hidden no-print fixed bottom-5 right-5 px-5 py-3 rounded-2xl shadow-lg text-white z-50"
+    ></div>
+
+    <script>
+      const STORAGE_KEY = "erp_premium_assistencia_v3";
+      let clientes = [],
+        fornecedores = [],
+        ordens = [],
+        produtos = [],
+        vendas = [],
+        financeiro = [],
+        stockMovements = [],
+        cart = [],
+        settings = {},
+        financeTab = "Receber",
+        selectedOrderId = null,
+        selectedSaleId = null,
+        printType = "os",
+        printMode = "a4",
+        paymentMethod = "Pix";
+      const defaultSettings = {
+        nome: "Minha Empresa",
+        telefone: "",
+        endereco: "",
+        logo: "",
+        picpayLink: "",
+        picpayPixKey: "",
+      };
+      function today() {
+        return new Date().toISOString().slice(0, 10);
+      }
+      function monthKey(d = today()) {
+        return String(d).slice(0, 7);
+      }
+      function onlyNumbers(v) {
+        return Array.from(String(v || ""))
+          .filter((c) => c >= "0" && c <= "9")
+          .join("");
+      }
+      function maskPhone(v) {
+        v = onlyNumbers(v).slice(0, 11);
+        if (v.length <= 2) return v ? "(" + v : "";
+        if (v.length <= 6) return "(" + v.slice(0, 2) + ") " + v.slice(2);
+        if (v.length <= 10)
+          return "(" + v.slice(0, 2) + ") " + v.slice(2, 6) + "-" + v.slice(6);
+        return "(" + v.slice(0, 2) + ") " + v.slice(2, 7) + "-" + v.slice(7);
+      }
+      function maskCpf(v) {
+        v = onlyNumbers(v).slice(0, 11);
+        let r = v.slice(0, 3);
+        if (v.length > 3) r += "." + v.slice(3, 6);
+        if (v.length > 6) r += "." + v.slice(6, 9);
+        if (v.length > 9) r += "-" + v.slice(9);
+        return r;
+      }
+      function money(v) {
+        return Number(v || 0).toLocaleString("pt-BR", {
+          style: "currency",
+          currency: "BRL",
+        });
+      }
+      function formatDate(d) {
+        return d ? String(d).split("-").reverse().join("/") : "-";
+      }
+      function getClient(id) {
+        return clientes.find((x) => Number(x.id) === Number(id));
+      }
+      function getOrder(id) {
+        return ordens.find((x) => Number(x.id) === Number(id));
+      }
+      function getProduct(id) {
+        return produtos.find((x) => Number(x.id) === Number(id));
+      }
+      function getSale(id) {
+        return vendas.find((x) => Number(x.id) === Number(id));
+      }
+      function saveData() {
+        try {
+          localStorage.setItem(
+            STORAGE_KEY,
+            JSON.stringify({
+              clientes,
+              fornecedores,
+              ordens,
+              produtos,
+              vendas,
+              financeiro,
+              stockMovements,
+              settings,
+            }),
+          );
+        } catch (e) {
+          toast("Erro ao salvar.", "error");
+        }
+      }
+      function loadData() {
+        try {
+          let raw = localStorage.getItem(STORAGE_KEY);
+          if (!raw) {
+            seedData();
+            saveData();
+            return;
+          }
+          let d = JSON.parse(raw);
+          clientes = d.clientes || [];
+          fornecedores = d.fornecedores || [];
+          ordens = d.ordens || [];
+          produtos = d.produtos || [];
+          vendas = d.vendas || [];
+          financeiro = d.financeiro || [];
+          stockMovements = d.stockMovements || [];
+          settings = Object.assign({}, defaultSettings, d.settings || {});
+        } catch (e) {
+          seedData();
+          saveData();
+        }
+      }
+      function seedData() {
+        settings = {
+          nome: "Minha Empresa",
+          telefone: "(73) 99975-8651",
+          endereco: "Centro",
+          logo: "",
+          picpayLink: "",
+          picpayPixKey: "",
+        };
+        clientes = [
+          {
+            id: 1,
+            nome: "João Silva",
+            telefone: "(73) 99999-1111",
+            email: "joao@email.com",
+            cpf: "123.456.789-00",
+          },
+          {
+            id: 2,
+            nome: "Maria Santos",
+            telefone: "(73) 98888-2222",
+            email: "maria@email.com",
+            cpf: "",
+          },
+        ];
+        fornecedores = [
+          {
+            id: 1,
+            nome: "Fornecedor de Peças",
+            telefone: "(73) 97777-0000",
+            categoria: "Peças e acessórios",
+            documento: "",
+            obs: "Fornecedor inicial",
+          },
+        ];
+        produtos = [
+          {
+            id: 1,
+            nome: "Película 3D",
+            sku: "PEL-3D",
+            categoria: "Acessórios",
+            custo: 5,
+            preco: 20,
+            estoque: 25,
+            minimo: 5,
+            descricao: "",
+          },
+          {
+            id: 2,
+            nome: "Cabo USB-C",
+            sku: "789001",
+            categoria: "Cabos",
+            custo: 12,
+            preco: 35,
+            estoque: 8,
+            minimo: 10,
+            descricao: "",
+          },
+          {
+            id: 3,
+            nome: "Fonte Turbo",
+            sku: "789002",
+            categoria: "Carregadores",
+            custo: 28,
+            preco: 65,
+            estoque: 12,
+            minimo: 4,
+            descricao: "",
+          },
+        ];
+        ordens = [
+          {
+            id: 1,
+            numero: "OS-0001",
+            clienteId: 1,
+            marca: "Apple",
+            modelo: "iPhone 11",
+            cor: "Preto",
+            problema: "Tela quebrada",
+            diagnostico: "Troca do módulo frontal.",
+            valor: 250,
+            status: "Finalizado",
+            entrada: today(),
+            previsao: "",
+            observacoes: "",
+          },
+        ];
+        vendas = [];
+        financeiro = [
+          {
+            id: 1,
+            tipo: "Receber",
+            origem: "OS",
+            descricao: "Serviço OS-0001",
+            valor: 250,
+            data: today(),
+            status: "Pendente",
+            clienteId: 1,
+            ordemId: 1,
+            vendaId: "",
+            auto: true,
+          },
+          {
+            id: 2,
+            tipo: "Pagar",
+            origem: "Despesa",
+            descricao: "Compra de peças",
+            valor: 90,
+            data: today(),
+            status: "Pendente",
+            clienteId: "",
+            ordemId: "",
+            vendaId: "",
+            auto: false,
+          },
+        ];
+        stockMovements = [];
+      }
+      function generateOrderNumber() {
+        let max = 0;
+        ordens.forEach((o) => {
+          let n = Number(String(o.numero || "").replace("OS-", ""));
+          if (n > max) max = n;
+        });
+        return "OS-" + String(max + 1).padStart(4, "0");
+      }
+      function generateSaleNumber() {
+        let max = 0;
+        vendas.forEach((v) => {
+          let n = Number(String(v.numero || "").replace("VD-", ""));
+          if (n > max) max = n;
+        });
+        return "VD-" + String(max + 1).padStart(4, "0");
+      }
+      function badge(s) {
+        let m = {
+          "Em análise": "bg-purple-100 text-purple-700",
+          "Em manutenção": "bg-blue-100 text-blue-700",
+          "Aguardando peça": "bg-yellow-100 text-yellow-700",
+          Finalizado: "bg-green-100 text-green-700",
+          Entregue: "bg-slate-200 text-slate-700",
+          Pendente: "bg-yellow-100 text-yellow-700",
+          Recebido: "bg-green-100 text-green-700",
+          Pago: "bg-green-100 text-green-700",
+          Cancelada: "bg-red-100 text-red-700",
+          Cancelado: "bg-red-100 text-red-700",
+          Doação: "bg-purple-100 text-purple-700",
+          Baixo: "bg-red-100 text-red-700",
+          OK: "bg-green-100 text-green-700",
+        };
+        return (
+          '<span class="px-3 py-1 rounded-full text-xs font-medium ' +
+          (m[s] || "bg-slate-100 text-slate-700") +
+          '">' +
+          s +
+          "</span>"
+        );
+      }
+      function toast(msg, type = "success") {
+        let el = document.getElementById("toast");
+        el.innerText = msg;
+        el.className =
+          "no-print fixed bottom-5 right-5 px-5 py-3 rounded-2xl shadow-lg text-white z-50 " +
+          (type === "error" ? "bg-red-600" : "bg-green-600");
+        setTimeout(() => el.classList.add("hidden"), 2500);
+      }
+      function openModal(id) {
+        document.getElementById(id).classList.remove("hidden");
+        document.getElementById(id).classList.add("flex");
+      }
+      function closeModal(id) {
+        document.getElementById(id).classList.add("hidden");
+        document.getElementById(id).classList.remove("flex");
+      }
+      function showPage(id) {
+        document
+          .querySelectorAll(".page")
+          .forEach((p) => p.classList.add("hidden"));
+        document.getElementById(id).classList.remove("hidden");
+        let titles = {
+          dashboard: "Dashboard",
+          clientes: "Clientes",
+          fornecedores: "Fornecedores",
+          ordens: "Ordens de Serviço",
+          produtos: "Produtos",
+          pdv: "Vendas / PDV",
+          financeiro: "Financeiro",
+          relatorios: "Relatórios",
+          configuracoes: "Configurações",
+          formOS: "Cadastro de OS",
+          detalhesOS: "Detalhes da OS",
+          impressao: "Impressão",
+        };
+        pageTitle.innerText = titles[id] || "Sistema";
+        document.querySelectorAll(".menu-btn").forEach((b) => {
+          b.classList.remove("bg-primary");
+          if (b.dataset.page === id) b.classList.add("bg-primary");
+        });
+        renderAll();
+        if (window.lucide) lucide.createIcons();
+      }
+      function updateCompanyUI() {
+        let n = settings.nome || "Minha Empresa";
+        companyDisplayName.innerText = n;
+        companyHeaderName.innerText =
+          n + " • ERP premium de assistência, estoque, PDV e financeiro";
+        [sidebarLogo, logoPreview, headerLogo].forEach((img) => {
+          if (!img) return;
+          if (settings.logo) {
+            img.src = settings.logo;
+            img.classList.remove("hidden");
+          } else {
+            img.removeAttribute("src");
+            img.classList.add("hidden");
+          }
+        });
+      }
+      function totals() {
+        let receber = financeiro
+          .filter(
+            (f) =>
+              f.tipo === "Receber" &&
+              f.status !== "Recebido" &&
+              f.status !== "Cancelado",
+          )
+          .reduce((s, f) => s + Number(f.valor || 0), 0);
+        let pagar = financeiro
+          .filter(
+            (f) =>
+              f.tipo === "Pagar" &&
+              f.status !== "Pago" &&
+              f.status !== "Cancelado",
+          )
+          .reduce((s, f) => s + Number(f.valor || 0), 0);
+        let receita = financeiro
+          .filter((f) => f.tipo === "Receber" && f.status !== "Cancelado")
+          .reduce((s, f) => s + Number(f.valor || 0), 0);
+        let despesa = financeiro
+          .filter((f) => f.tipo === "Pagar" && f.status !== "Cancelado")
+          .reduce((s, f) => s + Number(f.valor || 0), 0);
+        return { receber, pagar, receita, despesa, lucro: receber - pagar };
+      }
+      function renderDashboard() {
+        let t = totals(),
+          mes = monthKey();
+        dashTotalOS.innerText = ordens.length;
+        dashAnalise.innerText = ordens.filter(
+          (o) => o.status === "Em análise",
+        ).length;
+        dashManutencao.innerText = ordens.filter(
+          (o) => o.status === "Em manutenção",
+        ).length;
+        dashPeca.innerText = ordens.filter(
+          (o) => o.status === "Aguardando peça",
+        ).length;
+        dashFinalMes.innerText = ordens.filter(
+          (o) => o.status === "Finalizado" && String(o.entrada).startsWith(mes),
+        ).length;
+        let vendasHoje = vendas
+          .filter((v) => v.data === today() && v.status !== "Cancelada")
+          .reduce((s, v) => s + v.total, 0);
+        let ticket = vendas.length
+          ? vendas.reduce((s, v) => s + v.total, 0) / vendas.length
+          : 0;
+        dashVendidoHoje.innerText = money(vendasHoje);
+        dashTicket.innerText = money(ticket);
+        dashReceber.innerText = money(t.receber);
+        dashPagar.innerText = money(t.pagar);
+        dashLucro.innerText = money(t.lucro);
+        dashboardOrders.innerHTML = "";
+        [...ordens]
+          .sort((a, b) => b.id - a.id)
+          .slice(0, 5)
+          .forEach(
+            (o) =>
+              (dashboardOrders.innerHTML +=
+                '<tr class="hover:bg-slate-50"><td class="px-5 py-4 font-medium">' +
+                o.numero +
+                '</td><td class="px-5 py-4">' +
+                (getClient(o.clienteId)?.nome || "-") +
+                '</td><td class="px-5 py-4">' +
+                o.marca +
+                " " +
+                o.modelo +
+                '</td><td class="px-5 py-4">' +
+                badge(o.status) +
+                '</td><td class="px-5 py-4">' +
+                money(o.valor) +
+                "</td></tr>"),
+          );
+        renderSalesChart();
+        renderTopProducts("dashTopProducts");
+      }
+      function renderSalesChart() {
+        let range = Number(chartRange?.value || 7),
+          days = [],
+          vals = [];
+        for (let i = range - 1; i >= 0; i--) {
+          let d = new Date();
+          d.setDate(d.getDate() - i);
+          let key = d.toISOString().slice(0, 10);
+          days.push(key);
+          vals.push(
+            vendas
+              .filter((v) => v.data === key && v.status !== "Cancelada")
+              .reduce((s, v) => s + v.total, 0),
+          );
+        }
+        let max = Math.max(...vals, 1);
+        salesChart.innerHTML = "";
+        vals.forEach(
+          (v, i) =>
+            (salesChart.innerHTML +=
+              '<div class="flex-1 flex flex-col items-center gap-1"><div title="' +
+              money(v) +
+              '" class="w-full bg-gradient-to-t from-primary to-blue-300 rounded-t-xl hover:opacity-80" style="height:' +
+              Math.max(8, (v / max) * 200) +
+              'px"></div><span class="text-[10px] text-slate-400">' +
+              days[i].slice(8) +
+              "</span></div>"),
+        );
+      }
+      function renderTopProducts(target) {
+        let box = document.getElementById(target);
+        if (!box) return;
+        let count = {};
+        vendas
+          .filter((v) => v.status !== "Cancelada")
+          .forEach((v) =>
+            v.itens.forEach(
+              (i) => (count[i.produtoId] = (count[i.produtoId] || 0) + i.qtd),
+            ),
+          );
+        let rows = Object.entries(count)
+          .sort((a, b) => b[1] - a[1])
+          .slice(0, 5);
+        box.innerHTML = rows.length
+          ? ""
+          : '<p class="text-sm text-slate-500">Sem vendas ainda.</p>';
+        rows.forEach(
+          ([id, q]) =>
+            (box.innerHTML +=
+              '<div class="flex justify-between border rounded-2xl p-3"><span>' +
+              ((getProduct(id) || {}).nome || "Produto") +
+              "</span><b>" +
+              q +
+              " un.</b></div>"),
+        );
+      }
+      function renderClients() {
+        let q = (clientSearch?.value || "").toLowerCase();
+        let list = clientes.filter((c) =>
+          (c.nome + " " + c.telefone + " " + c.email + " " + c.cpf)
+            .toLowerCase()
+            .includes(q),
+        );
+        clientsTable.innerHTML = list.length
+          ? ""
+          : '<tr><td colspan="5" class="px-5 py-8 text-center text-slate-500">Nenhum cliente.</td></tr>';
+        list.forEach(
+          (c) =>
+            (clientsTable.innerHTML +=
+              '<tr class="hover:bg-slate-50"><td class="px-5 py-4 font-medium">' +
+              c.nome +
+              '</td><td class="px-5 py-4">' +
+              c.telefone +
+              '</td><td class="px-5 py-4">' +
+              (c.email || "-") +
+              '</td><td class="px-5 py-4">' +
+              (c.cpf || "-") +
+              '</td><td class="px-5 py-4 text-right"><button onclick="editClient(' +
+              c.id +
+              ')" class="text-primary mr-3">Editar</button><button onclick="deleteClient(' +
+              c.id +
+              ')" class="text-red-600">Excluir</button></td></tr>'),
+        );
+      }
+      function openClientModal() {
+        clientModalTitle.innerText = "Novo Cliente";
+        clientId.value = "";
+        clientName.value = "";
+        clientPhone.value = "";
+        clientEmail.value = "";
+        clientCpf.value = "";
+        openModal("clientModal");
+      }
+      function saveClient(e) {
+        e.preventDefault();
+        let id = clientId.value,
+          d = {
+            id: id ? Number(id) : Date.now(),
+            nome: clientName.value.trim(),
+            telefone: clientPhone.value.trim(),
+            email: clientEmail.value.trim(),
+            cpf: clientCpf.value.trim(),
+          };
+        clientes = id
+          ? clientes.map((c) => (c.id == id ? d : c))
+          : [...clientes, d];
+        saveData();
+        closeModal("clientModal");
+        renderAll();
+        toast("Cliente salvo.");
+      }
+      function editClient(id) {
+        let c = getClient(id);
+        openClientModal();
+        clientModalTitle.innerText = "Editar Cliente";
+        clientId.value = c.id;
+        clientName.value = c.nome;
+        clientPhone.value = c.telefone;
+        clientEmail.value = c.email || "";
+        clientCpf.value = c.cpf || "";
+      }
+      function deleteClient(id) {
+        if (
+          ordens.some((o) => o.clienteId == id) ||
+          vendas.some((v) => v.clienteId == id)
+        )
+          return toast("Cliente possui vínculo.", "error");
+        if (!confirm("Excluir cliente?")) return;
+        clientes = clientes.filter((c) => c.id != id);
+        saveData();
+        renderAll();
+        toast("Cliente excluído.");
+      }
+      function populateSelects() {
+        let opts = clientes
+          .map(
+            (c) =>
+              '<option value="' +
+              c.id +
+              '">' +
+              c.nome +
+              " - " +
+              c.telefone +
+              "</option>",
+          )
+          .join("");
+        let supplierOpts = fornecedores
+          .map(
+            (f) =>
+              '<option value="' +
+              f.id +
+              '">' +
+              f.nome +
+              " - " +
+              (f.categoria || "Fornecedor") +
+              "</option>",
+          )
+          .join("");
+        if (orderClient) orderClient.innerHTML = opts;
+        if (saleClient)
+          saleClient.innerHTML =
+            '<option value="">Cliente opcional</option>' + opts;
+        if (financeClient)
+          financeClient.innerHTML =
+            '<option value="">Cliente opcional</option>' + opts;
+        if (financeSupplier)
+          financeSupplier.innerHTML =
+            '<option value="">Fornecedor opcional</option>' + supplierOpts;
+        if (financeOrder)
+          financeOrder.innerHTML =
+            '<option value="">OS opcional</option>' +
+            ordens
+              .map(
+                (o) => '<option value="' + o.id + '">' + o.numero + "</option>",
+              )
+              .join("");
+        if (stockProduct)
+          stockProduct.innerHTML = produtos
+            .map(
+              (p) =>
+                '<option value="' +
+                p.id +
+                '">' +
+                p.nome +
+                " - estoque " +
+                p.estoque +
+                "</option>",
+            )
+            .join("");
+      }
+      function renderOrders() {
+        let q = (orderSearch?.value || "").toLowerCase(),
+          st = statusFilter?.value || "";
+        let list = [...ordens]
+          .sort((a, b) => b.id - a.id)
+          .filter(
+            (o) =>
+              (
+                o.numero +
+                " " +
+                (getClient(o.clienteId)?.nome || "") +
+                " " +
+                o.marca +
+                " " +
+                o.modelo
+              )
+                .toLowerCase()
+                .includes(q) &&
+              (!st || o.status === st),
+          );
+        ordersTable.innerHTML = list.length
+          ? ""
+          : '<tr><td colspan="6" class="px-5 py-8 text-center text-slate-500">Nenhuma OS.</td></tr>';
+        list.forEach(
+          (o) =>
+            (ordersTable.innerHTML +=
+              '<tr class="hover:bg-slate-50"><td class="px-5 py-4 font-medium">' +
+              o.numero +
+              '</td><td class="px-5 py-4">' +
+              (getClient(o.clienteId)?.nome || "-") +
+              '</td><td class="px-5 py-4">' +
+              o.marca +
+              " " +
+              o.modelo +
+              '</td><td class="px-5 py-4">' +
+              badge(o.status) +
+              '</td><td class="px-5 py-4">' +
+              money(o.valor) +
+              '</td><td class="px-5 py-4 text-right whitespace-nowrap"><button onclick="viewOrder(' +
+              o.id +
+              ')" class="text-slate-700 mr-2">Ver</button><button onclick="editOrder(' +
+              o.id +
+              ')" class="text-primary mr-2">Editar</button><button onclick="deleteOrder(' +
+              o.id +
+              ')" class="text-red-600 mr-2">Excluir</button><button onclick="preparePrintOS(' +
+              o.id +
+              ')" class="text-green-600">Imprimir</button></td></tr>'),
+        );
+      }
+      function generateOrderNumber() {
+        let max = 0;
+        ordens.forEach((o) => {
+          let n = Number(String(o.numero || "").replace("OS-", ""));
+          if (n > max) max = n;
+        });
+        return "OS-" + String(max + 1).padStart(4, "0");
+      }
+      function openOrderForm() {
+        if (!clientes.length) return toast("Cadastre um cliente.", "error");
+        populateSelects();
+        orderFormTitle.innerText = "Nova OS";
+        orderId.value = "";
+        deviceBrand.value = "";
+        deviceModel.value = "";
+        deviceColor.value = "";
+        reportedProblem.value = "";
+        technicalDiagnosis.value = "";
+        serviceValue.value = "";
+        orderStatus.value = "Em análise";
+        entryDate.value = today();
+        expectedDate.value = "";
+        orderNotes.value = "";
+        showPage("formOS");
+      }
+      function saveOrder(e) {
+        e.preventDefault();
+        let id = orderId.value,
+          old = id ? getOrder(id) : null,
+          o = {
+            id: id ? Number(id) : Date.now(),
+            numero: old ? old.numero : generateOrderNumber(),
+            clienteId: Number(orderClient.value),
+            marca: deviceBrand.value,
+            modelo: deviceModel.value,
+            cor: deviceColor.value,
+            problema: reportedProblem.value,
+            diagnostico: technicalDiagnosis.value,
+            valor: Number(serviceValue.value || 0),
+            status: orderStatus.value,
+            entrada: entryDate.value,
+            previsao: expectedDate.value,
+            observacoes: orderNotes.value,
+          };
+        ordens = id ? ordens.map((x) => (x.id == id ? o : x)) : [...ordens, o];
+        syncOrderFinance(o);
+        saveData();
+        showPage("ordens");
+        toast("OS salva.");
+      }
+      function syncOrderFinance(o) {
+        let ex = financeiro.find(
+          (f) => f.auto && f.origem === "OS" && f.ordemId == o.id,
+        );
+        if (o.valor <= 0) {
+          financeiro = financeiro.filter(
+            (f) => !(f.auto && f.origem === "OS" && f.ordemId == o.id),
+          );
+          return;
+        }
+        let f = {
+          id: ex ? ex.id : Date.now() + 1,
+          tipo: "Receber",
+          origem: "OS",
+          descricao: "Serviço " + o.numero,
+          valor: o.valor,
+          data: o.entrada,
+          status: ex?.status || "Pendente",
+          clienteId: o.clienteId,
+          ordemId: o.id,
+          vendaId: "",
+          auto: true,
+        };
+        financeiro = ex
+          ? financeiro.map((x) => (x.id == ex.id ? f : x))
+          : [...financeiro, f];
+      }
+      function editOrder(id) {
+        let o = getOrder(id);
+        populateSelects();
+        orderFormTitle.innerText = "Editar " + o.numero;
+        orderId.value = o.id;
+        orderClient.value = o.clienteId;
+        deviceBrand.value = o.marca;
+        deviceModel.value = o.modelo;
+        deviceColor.value = o.cor;
+        reportedProblem.value = o.problema;
+        technicalDiagnosis.value = o.diagnostico;
+        serviceValue.value = o.valor;
+        orderStatus.value = o.status;
+        entryDate.value = o.entrada;
+        expectedDate.value = o.previsao;
+        orderNotes.value = o.observacoes;
+        showPage("formOS");
+      }
+      function deleteOrder(id) {
+        if (!confirm("Excluir OS?")) return;
+        ordens = ordens.filter((o) => o.id != id);
+        financeiro = financeiro.filter((f) => f.ordemId != id);
+        saveData();
+        renderAll();
+        toast("OS excluída.");
+      }
+      function whatsappLink(o) {
+        let c = getClient(o.clienteId);
+        return (
+          "https://wa.me/55" +
+          onlyNumbers(c?.telefone || "") +
+          "?text=" +
+          encodeURIComponent(
+            "Olá " +
+              (c?.nome || "") +
+              ", sua OS " +
+              o.numero +
+              " está: " +
+              o.status +
+              ".",
+          )
+        );
+      }
+      function viewOrder(id) {
+        let o = getOrder(id),
+          c = getClient(o.clienteId);
+        orderDetails.innerHTML =
+          '<div class="flex justify-between gap-4 mb-6"><div><h3 class="text-2xl font-bold">' +
+          o.numero +
+          '</h3><p class="text-slate-500">Detalhes completos</p></div><div class="flex gap-2"><button onclick="editOrder(' +
+          o.id +
+          ')" class="bg-primary text-white px-4 py-2 rounded-2xl">Editar</button><button onclick="preparePrintOS(' +
+          o.id +
+          ')" class="bg-green-600 text-white px-4 py-2 rounded-2xl">Imprimir</button><a target="_blank" href="' +
+          whatsappLink(o) +
+          '" class="bg-emerald-600 text-white px-4 py-2 rounded-2xl">WhatsApp</a></div></div><div class="grid md:grid-cols-2 gap-4"><div class="border rounded-2xl p-4"><b>Cliente</b><p>' +
+          c.nome +
+          "</p><p>" +
+          c.telefone +
+          '</p></div><div class="border rounded-2xl p-4"><b>Aparelho</b><p>' +
+          o.marca +
+          " " +
+          o.modelo +
+          "</p><p>" +
+          o.status +
+          '</p></div><div class="border rounded-2xl p-4 md:col-span-2"><b>Serviço</b><p>' +
+          o.problema +
+          "</p><p>" +
+          o.diagnostico +
+          "</p><p>" +
+          money(o.valor) +
+          "</p></div></div>";
+        showPage("detalhesOS");
+      }
+      function renderProducts() {
+        let q = (productSearch?.value || "").toLowerCase();
+        let list = produtos.filter((p) =>
+          (p.nome + " " + p.sku + " " + p.categoria).toLowerCase().includes(q),
+        );
+        productsTable.innerHTML = list.length
+          ? ""
+          : '<tr><td colspan="7" class="px-5 py-8 text-center text-slate-500">Nenhum produto.</td></tr>';
+        list.forEach((p) => {
+          let low = Number(p.estoque) <= Number(p.minimo || 0);
+          productsTable.innerHTML +=
+            '<tr class="hover:bg-slate-50"><td class="px-5 py-4 font-medium">' +
+            p.nome +
+            '</td><td class="px-5 py-4">' +
+            p.sku +
+            '</td><td class="px-5 py-4">' +
+            (p.categoria || "-") +
+            '</td><td class="px-5 py-4">' +
+            money(p.custo) +
+            '</td><td class="px-5 py-4">' +
+            money(p.preco) +
+            '</td><td class="px-5 py-4">' +
+            (low ? "🔴 " : "") +
+            p.estoque +
+            " " +
+            (low ? badge("Baixo") : badge("OK")) +
+            '</td><td class="px-5 py-4 text-right whitespace-nowrap"><button onclick="showProductHistory(' +
+            p.id +
+            ')" class="text-slate-700 mr-3">Histórico</button><button onclick="editProduct(' +
+            p.id +
+            ')" class="text-primary mr-3">Editar</button><button onclick="deleteProduct(' +
+            p.id +
+            ')" class="text-red-600">Excluir</button></td></tr>';
+        });
+      }
+      function openProductModal() {
+        productModalTitle.innerText = "Novo Produto";
+        productId.value = "";
+        productName.value = "";
+        productSku.value = "";
+        productCategory.value = "";
+        productCost.value = "";
+        productPrice.value = "";
+        productStock.value = "";
+        productMinStock.value = "";
+        productDescription.value = "";
+        openModal("productModal");
+      }
+      function saveProduct(e) {
+        e.preventDefault();
+        let id = productId.value,
+          p = {
+            id: id ? Number(id) : Date.now(),
+            nome: productName.value,
+            sku: productSku.value,
+            categoria: productCategory.value,
+            custo: Number(productCost.value || 0),
+            preco: Number(productPrice.value || 0),
+            estoque: Number(productStock.value || 0),
+            minimo: Number(productMinStock.value || 0),
+            descricao: productDescription.value,
+          };
+        produtos = id
+          ? produtos.map((x) => (x.id == id ? p : x))
+          : [...produtos, p];
+        saveData();
+        closeModal("productModal");
+        renderAll();
+        toast("Produto salvo.");
+      }
+      function editProduct(id) {
+        let p = getProduct(id);
+        openProductModal();
+        productModalTitle.innerText = "Editar Produto";
+        productId.value = p.id;
+        productName.value = p.nome;
+        productSku.value = p.sku;
+        productCategory.value = p.categoria;
+        productCost.value = p.custo;
+        productPrice.value = p.preco;
+        productStock.value = p.estoque;
+        productMinStock.value = p.minimo;
+        productDescription.value = p.descricao;
+      }
+      function deleteProduct(id) {
+        let wasSold = vendas.some((v) =>
+          v.itens.some((i) => i.produtoId == id),
+        );
+        let msg = wasSold
+          ? "Este produto já tem histórico de venda. Excluir mesmo assim? As vendas antigas continuarão registradas, mas o nome pode aparecer como Produto removido."
+          : "Excluir produto?";
+        if (!confirm(msg)) return;
+        produtos = produtos.filter((p) => p.id != id);
+        saveData();
+        renderAll();
+        toast("Produto excluído.");
+      }
+      function openStockModal() {
+        populateSelects();
+        stockQty.value = "";
+        stockNote.value = "";
+        openModal("stockModal");
+      }
+      function saveStockEntry(e) {
+        e.preventDefault();
+        let id = Number(stockProduct.value),
+          q = Number(stockQty.value);
+        produtos = produtos.map((p) =>
+          p.id == id ? { ...p, estoque: Number(p.estoque) + q } : p,
+        );
+        stockMovements.unshift({
+          id: Date.now(),
+          produtoId: id,
+          tipo: "Entrada",
+          qtd: q,
+          data: today(),
+          obs: stockNote.value,
+        });
+        saveData();
+        closeModal("stockModal");
+        renderAll();
+        toast("Estoque atualizado.");
+      }
+      function renderStockHistory() {
+        stockHistory.innerHTML = stockMovements.length
+          ? ""
+          : '<p class="text-slate-500">Sem movimentações.</p>';
+        stockMovements
+          .slice(0, 8)
+          .forEach(
+            (m) =>
+              (stockHistory.innerHTML +=
+                '<div class="flex justify-between border rounded-2xl p-3"><span>' +
+                m.tipo +
+                " • " +
+                (getProduct(m.produtoId)?.nome || "Produto") +
+                " • " +
+                m.obs +
+                "</span><b>" +
+                m.qtd +
+                " un.</b></div>"),
+          );
+      }
+      function renderPDVProducts() {
+        let q = (pdvSearch?.value || "").toLowerCase();
+        let list = produtos.filter(
+          (p) =>
+            p.estoque > 0 &&
+            (p.nome + " " + p.sku + " " + p.categoria)
+              .toLowerCase()
+              .includes(q),
+        );
+        pdvProducts.innerHTML = list.length
+          ? ""
+          : '<p class="text-slate-500">Nenhum produto disponível.</p>';
+        list.forEach(
+          (p) =>
+            (pdvProducts.innerHTML +=
+              '<button onclick="addToCart(' +
+              p.id +
+              ')" class="text-left border rounded-2xl p-4 hover:border-primary hover:shadow-sm"><div class="flex justify-between"><div><b>' +
+              p.nome +
+              '</b><p class="text-sm text-slate-500">' +
+              p.sku +
+              " • estoque " +
+              p.estoque +
+              '</p></div><b class="text-primary">' +
+              money(p.preco) +
+              "</b></div></button>"),
+        );
+      }
+      function barcodeEnter(e) {
+        if (e.key !== "Enter") return;
+        let code = barcodeInput.value.trim();
+        let p = produtos.find(
+          (x) => String(x.sku).toLowerCase() === code.toLowerCase(),
+        );
+        if (!p) return toast("Produto não encontrado.", "error");
+        addToCart(p.id);
+        barcodeInput.value = "";
+      }
+      function addToCart(id) {
+        let p = getProduct(id),
+          it = cart.find((i) => i.produtoId == id);
+        let qtd = it ? it.qtd : 0;
+        if (qtd + 1 > p.estoque) return toast("Estoque insuficiente.", "error");
+        if (it) it.qtd++;
+        else
+          cart.push({ produtoId: id, qtd: 1, preco: p.preco, custo: p.custo });
+        renderCart();
+      }
+      function changeCartQty(id, delta) {
+        let it = cart.find((i) => i.produtoId == id);
+        if (!it) return;
+        let p = getProduct(id);
+        it.qtd += delta;
+        if (it.qtd <= 0) cart = cart.filter((i) => i.produtoId != id);
+        if (it && it.qtd > p.estoque) {
+          it.qtd = p.estoque;
+          toast("Limite de estoque.", "error");
+        }
+        renderCart();
+      }
+      function setPayment(p) {
+        paymentMethod = p;
+        document
+          .querySelectorAll(".pay-btn")
+          .forEach((b) => b.classList.remove("bg-primary", "text-white"));
+        event.target.classList.add("bg-primary", "text-white");
+        renderCart();
+      }
+      function renderCart() {
+        cartItems.innerHTML = cart.length
+          ? ""
+          : '<p class="text-slate-500 text-sm">Carrinho vazio.</p>';
+        cart.forEach((i) => {
+          let p = getProduct(i.produtoId);
+          cartItems.innerHTML +=
+            '<div class="border rounded-2xl p-3"><div class="flex justify-between"><div><b>' +
+            p.nome +
+            '</b><p class="text-sm text-slate-500">' +
+            money(i.preco) +
+            ' cada</p></div><button onclick="changeCartQty(' +
+            i.produtoId +
+            ",-" +
+            i.qtd +
+            ')" class="text-red-600">Remover</button></div><div class="flex justify-between mt-2"><div><button onclick="changeCartQty(' +
+            i.produtoId +
+            ',-1)" class="bg-slate-100 w-8 h-8 rounded-lg">-</button><span class="px-3">' +
+            i.qtd +
+            '</span><button onclick="changeCartQty(' +
+            i.produtoId +
+            ',1)" class="bg-slate-100 w-8 h-8 rounded-lg">+</button></div><b>' +
+            money(i.qtd * i.preco) +
+            "</b></div></div>";
+        });
+        let total = cart.reduce((s, i) => s + i.qtd * i.preco, 0);
+        cartTotal.innerText = money(total);
+        changeValue.innerText = money(
+          Math.max(0, Number(amountPaid.value || 0) - total),
+        );
+      }
+      function finishSale() {
+        if (!cart.length) return toast("Carrinho vazio.", "error");
+        for (let i of cart) {
+          let p = getProduct(i.produtoId);
+          if (!p || i.qtd > p.estoque)
+            return toast("Estoque insuficiente.", "error");
+        }
+        let sale = {
+          id: Date.now(),
+          numero: generateSaleNumber(),
+          clienteId: saleClient.value ? Number(saleClient.value) : "",
+          data: today(),
+          pagamento: paymentMethod,
+          status: "Concluída",
+          itens: cart.map((i) => ({ ...i })),
+          total: cart.reduce((s, i) => s + i.qtd * i.preco, 0),
+          custo: cart.reduce((s, i) => s + i.qtd * (i.custo || 0), 0),
+          pago: Number(amountPaid.value || 0),
+        };
+        vendas.push(sale);
+        cart.forEach((i) => {
+          produtos = produtos.map((p) =>
+            p.id == i.produtoId ? { ...p, estoque: p.estoque - i.qtd } : p,
+          );
+          stockMovements.unshift({
+            id: Date.now() + i.produtoId,
+            produtoId: i.produtoId,
+            tipo: "Saída venda " + sale.numero,
+            qtd: i.qtd,
+            data: today(),
+            obs: "PDV",
+          });
+        });
+        financeiro.push({
+          id: Date.now() + 1,
+          tipo: "Receber",
+          origem: "Venda",
+          descricao: "Venda " + sale.numero,
+          valor: sale.total,
+          data: sale.data,
+          status: "Recebido",
+          clienteId: sale.clienteId,
+          ordemId: "",
+          vendaId: sale.id,
+          auto: true,
+        });
+        cart = [];
+        amountPaid.value = "";
+        saveData();
+        renderAll();
+        preparePrintSale(sale.id);
+        toast("Venda finalizada.");
+      }
+      function generateSaleNumber() {
+        let max = 0;
+        vendas.forEach((v) => {
+          let n = Number(String(v.numero || "").replace("VD-", ""));
+          if (n > max) max = n;
+        });
+        return "VD-" + String(max + 1).padStart(4, "0");
+      }
+      function renderFinance() {
+        let t = totals();
+        finReceita.innerText = money(t.receita);
+        finDespesa.innerText = money(t.despesa);
+        finReceber.innerText = money(t.receber);
+        finLucro.innerText = money(t.lucro);
+        tabReceber.className =
+          financeTab === "Receber"
+            ? "px-4 py-2 rounded-2xl bg-green-600 text-white"
+            : "px-4 py-2 rounded-2xl bg-slate-100";
+        tabPagar.className =
+          financeTab === "Pagar"
+            ? "px-4 py-2 rounded-2xl bg-red-600 text-white"
+            : "px-4 py-2 rounded-2xl bg-slate-100";
+        financeHead.innerHTML =
+          financeTab === "Receber"
+            ? '<tr><th class="text-left px-5 py-3">Origem</th><th class="text-left px-5 py-3">Cliente</th><th class="text-left px-5 py-3">Valor</th><th class="text-left px-5 py-3">Data</th><th class="text-left px-5 py-3">Status</th><th class="text-right px-5 py-3">Ações</th></tr>'
+            : '<tr><th class="text-left px-5 py-3">Descrição</th><th class="text-left px-5 py-3">Valor</th><th class="text-left px-5 py-3">Data</th><th class="text-left px-5 py-3">Status</th><th class="text-right px-5 py-3">Ações</th></tr>';
+        let start = financeStart?.value,
+          end = financeEnd?.value;
+        let list = financeiro.filter((f) => f.tipo === financeTab);
+        if (start) list = list.filter((f) => f.data >= start);
+        if (end) list = list.filter((f) => f.data <= end);
+        list.sort((a, b) => b.id - a.id);
+        financeTable.innerHTML = list.length
+          ? ""
+          : '<tr><td colspan="6" class="px-5 py-8 text-center text-slate-500">Nenhum lançamento.</td></tr>';
+        list.forEach((f) => {
+          let done = f.tipo === "Receber" ? "Recebido" : "Pago",
+            act =
+              (f.status !== done
+                ? '<button onclick="markFinance(' +
+                  f.id +
+                  ')" class="text-green-600 mr-2">Marcar ' +
+                  done +
+                  "</button>"
+                : "") +
+              '<button onclick="editFinance(' +
+              f.id +
+              ')" class="text-primary mr-2">Editar</button><button onclick="deleteFinance(' +
+              f.id +
+              ')" class="text-red-600">Excluir</button>';
+          financeTable.innerHTML +=
+            financeTab === "Receber"
+              ? '<tr class="hover:bg-slate-50"><td class="px-5 py-4">' +
+                (f.origem || "Manual") +
+                '</td><td class="px-5 py-4">' +
+                (getClient(f.clienteId)?.nome || "-") +
+                '</td><td class="px-5 py-4">' +
+                money(f.valor) +
+                '</td><td class="px-5 py-4">' +
+                formatDate(f.data) +
+                '</td><td class="px-5 py-4">' +
+                badge(f.status) +
+                '</td><td class="px-5 py-4 text-right">' +
+                act +
+                "</td></tr>"
+              : '<tr class="hover:bg-slate-50"><td class="px-5 py-4">' +
+                f.descricao +
+                '</td><td class="px-5 py-4">' +
+                money(f.valor) +
+                '</td><td class="px-5 py-4">' +
+                formatDate(f.data) +
+                '</td><td class="px-5 py-4">' +
+                badge(f.status) +
+                '</td><td class="px-5 py-4 text-right">' +
+                act +
+                "</td></tr>";
+        });
+        renderCashChart(list);
+      }
+      function renderCashChart() {
+        let days = [];
+        for (let i = 6; i >= 0; i--) {
+          let d = new Date();
+          d.setDate(d.getDate() - i);
+          days.push(d.toISOString().slice(0, 10));
+        }
+        let max = 1,
+          vals = days.map((d) => {
+            let rec = financeiro
+              .filter((f) => f.data === d && f.tipo === "Receber")
+              .reduce((s, f) => s + f.valor, 0);
+            let pag = financeiro
+              .filter((f) => f.data === d && f.tipo === "Pagar")
+              .reduce((s, f) => s + f.valor, 0);
+            max = Math.max(max, rec, pag);
+            return { rec, pag, d };
+          });
+        cashChart.innerHTML = "";
+        vals.forEach(
+          (v) =>
+            (cashChart.innerHTML +=
+              '<div class="flex-1 flex flex-col items-center justify-end gap-1"><div class="w-full bg-green-500 rounded-t" style="height:' +
+              Math.max(4, (v.rec / max) * 120) +
+              'px"></div><div class="w-full bg-red-500 rounded-t" style="height:' +
+              Math.max(4, (v.pag / max) * 120) +
+              'px"></div><span class="text-[10px] text-slate-400">' +
+              v.d.slice(8) +
+              "</span></div>"),
+        );
+      }
+      function setFinanceTab(t) {
+        financeTab = t;
+        renderFinance();
+      }
+      function openFinanceModal() {
+        populateSelects();
+        financeModalTitle.innerText = "Novo lançamento";
+        financeId.value = "";
+        financeType.value = financeTab;
+        financeOrigin.value = financeTab === "Pagar" ? "Despesa" : "Manual";
+        financeDescription.value = "";
+        financeValue.value = "";
+        financeDate.value = today();
+        financeInstallments.value = 1;
+        financeNotes.value = "";
+        financeStatus.value = "Pendente";
+        financeClient.value = "";
+        financeOrder.value = "";
+        openModal("financeModal");
+      }
+      function saveFinance(e) {
+        e.preventDefault();
+        let id = financeId.value;
+        let parcelas = Math.max(1, Number(financeInstallments.value || 1));
+        let valorTotal = Number(financeValue.value || 0);
+        let base = {
+          tipo: financeType.value,
+          origem: financeOrigin.value || "Manual",
+          descricao: financeDescription.value,
+          valor: valorTotal,
+          data: financeDate.value,
+          status: financeStatus.value,
+          clienteId: financeClient.value ? Number(financeClient.value) : "",
+          fornecedorId: financeSupplier.value
+            ? Number(financeSupplier.value)
+            : "",
+          ordemId: financeOrder.value ? Number(financeOrder.value) : "",
+          vendaId: "",
+          auto: false,
+          obs: financeNotes.value,
+          parcelas: parcelas,
+        };
+        if (base.tipo === "Receber" && base.status === "Pago")
+          base.status = "Recebido";
+        if (base.tipo === "Pagar" && base.status === "Recebido")
+          base.status = "Pago";
+        if (id) {
+          financeiro = financeiro.map((x) =>
+            x.id == id ? { ...x, ...base } : x,
+          );
+        } else if (parcelas > 1) {
+          let valorParcela = Number((valorTotal / parcelas).toFixed(2));
+          for (let i = 1; i <= parcelas; i++) {
+            let d = new Date(base.data + "T00:00:00");
+            d.setMonth(d.getMonth() + i - 1);
+            financeiro.push({
+              ...base,
+              id: Date.now() + i,
+              valor: valorParcela,
+              data: d.toISOString().slice(0, 10),
+              descricao: base.descricao + " " + i + "/" + parcelas,
+              parcelaAtual: i,
+            });
+          }
+        } else {
+          financeiro.push({ ...base, id: Date.now(), parcelaAtual: 1 });
+        }
+        saveData();
+        closeModal("financeModal");
+        renderAll();
+        toast("Lançamento salvo.");
+      }
+      function editFinance(id) {
+        let f = financeiro.find((x) => x.id == id);
+        openFinanceModal();
+        financeModalTitle.innerText = "Editar lançamento";
+        financeId.value = f.id;
+        financeType.value = f.tipo;
+        financeOrigin.value = f.origem || "Manual";
+        financeDescription.value = f.descricao;
+        financeValue.value = f.valor;
+        financeDate.value = f.data;
+        financeStatus.value = f.status;
+        financeClient.value = f.clienteId || "";
+        financeSupplier.value = f.fornecedorId || "";
+        financeOrder.value = f.ordemId || "";
+        financeNotes.value = f.obs || "";
+        financeInstallments.value = f.parcelas || 1;
+      }
+      function deleteFinance(id) {
+        let f = financeiro.find((x) => x.id == id);
+        if (!f) return;
+        if (
+          !confirm(
+            "Excluir este lançamento financeiro? Esta ação não apaga a OS ou venda de origem.",
+          )
+        )
+          return;
+        financeiro = financeiro.filter((x) => x.id != id);
+        saveData();
+        renderAll();
+        toast("Lançamento excluído.");
+      }
+      function markFinance(id) {
+        financeiro = financeiro.map((f) =>
+          f.id == id
+            ? { ...f, status: f.tipo === "Receber" ? "Recebido" : "Pago" }
+            : f,
+        );
+        saveData();
+        renderAll();
+        toast("Status atualizado.");
+      }
+      function renderReports() {
+        let mes = monthKey(),
+          vm = vendas.filter(
+            (v) => v.data.startsWith(mes) && v.status !== "Cancelada",
+          );
+        repVendas.innerText = money(vm.reduce((s, v) => s + v.total, 0));
+        repProdutos.innerText = vm
+          .flatMap((v) => v.itens)
+          .reduce((s, i) => s + i.qtd, 0);
+        repLucro.innerText = money(
+          vm.reduce((s, v) => s + v.total - v.custo, 0),
+        );
+        repOS.innerText = ordens.filter(
+          (o) => o.status === "Finalizado" && o.entrada.startsWith(mes),
+        ).length;
+        let doacoes = financeiro
+          .filter(
+            (f) => f.origem === "Doação" && String(f.data).startsWith(mes),
+          )
+          .reduce((s, f) => s + Number(f.valor || 0), 0);
+        if (document.getElementById("repDoacoes"))
+          repDoacoes.innerText = money(doacoes);
+        renderTopProducts("topProducts");
+        renderSalesManagement();
+      }
+      function renderSalesManagement() {
+        if (!document.getElementById("salesList")) return;
+        salesList.innerHTML = vendas.length
+          ? ""
+          : '<p class="text-slate-500">Nenhuma venda registrada.</p>';
+        [...vendas]
+          .sort((a, b) => b.id - a.id)
+          .slice(0, 10)
+          .forEach((v) => {
+            let c = getClient(v.clienteId);
+            salesList.innerHTML +=
+              '<div class="border rounded-2xl p-3"><div class="flex justify-between gap-3"><div><b>' +
+              v.numero +
+              '</b><p class="text-sm text-slate-500">' +
+              formatDate(v.data) +
+              " • " +
+              (c?.nome || "Consumidor") +
+              " • " +
+              v.pagamento +
+              '</p></div><div class="text-right"><b>' +
+              money(v.total) +
+              '</b><div class="mt-1">' +
+              badge(v.status || "Concluída") +
+              '</div></div></div><div class="flex justify-end gap-2 mt-3"><button onclick="preparePrintSale(' +
+              v.id +
+              ')" class="text-green-600">Comprovante</button><button onclick="cancelSale(' +
+              v.id +
+              ')" class="text-orange-600">Cancelar</button><button onclick="deleteSale(' +
+              v.id +
+              ')" class="text-red-600">Excluir</button></div></div>';
+          });
+      }
+      function restoreSaleStock(v) {
+        if (!v || v.stockRestored) return;
+        v.itens.forEach((i) => {
+          produtos = produtos.map((p) =>
+            p.id == i.produtoId
+              ? { ...p, estoque: Number(p.estoque) + Number(i.qtd) }
+              : p,
+          );
+          stockMovements.unshift({
+            id: Date.now() + i.produtoId,
+            produtoId: i.produtoId,
+            tipo: "Estorno venda " + v.numero,
+            qtd: i.qtd,
+            data: today(),
+            obs: "Cancelamento/exclusão",
+          });
+        });
+        v.stockRestored = true;
+      }
+      function cancelSale(id) {
+        let v = getSale(id);
+        if (!v) return;
+        if (v.status === "Cancelada")
+          return toast("Venda já está cancelada.", "error");
+        if (!confirm("Cancelar esta venda e devolver os produtos ao estoque?"))
+          return;
+        restoreSaleStock(v);
+        v.status = "Cancelada";
+        financeiro = financeiro.map((f) =>
+          f.vendaId == id ? { ...f, status: "Cancelado" } : f,
+        );
+        saveData();
+        renderAll();
+        toast("Venda cancelada e estoque estornado.");
+      }
+      function deleteSale(id) {
+        let v = getSale(id);
+        if (!v) return;
+        if (
+          !confirm(
+            "Excluir esta venda definitivamente? O estoque será estornado se ainda não foi.",
+          )
+        )
+          return;
+        restoreSaleStock(v);
+        vendas = vendas.filter((x) => x.id != id);
+        financeiro = financeiro.filter((f) => f.vendaId != id);
+        saveData();
+        renderAll();
+        toast("Venda excluída.");
+      }
+      function preparePrintOS(id) {
+        selectedOrderId = id;
+        printType = "os";
+        renderPrint();
+        showPage("impressao");
+      }
+      function preparePrintSale(id) {
+        selectedSaleId = id;
+        printType = "sale";
+        renderPrint();
+        showPage("impressao");
+      }
+      function setPrintMode(m) {
+        printMode = m;
+        renderPrint();
+      }
+      function renderPrint() {
+        printArea.className =
+          printMode === "thermal"
+            ? "thermal bg-white p-4 shadow-sm border"
+            : "bg-white rounded-2xl premium-card p-8 max-w-4xl";
+        let logo = settings.logo
+          ? '<img src="' +
+            settings.logo +
+            '" style="max-width:80px;max-height:80px;margin:0 auto 8px;object-fit:contain;">'
+          : "";
+        let head =
+          '<div style="text-align:center;border-bottom:1px dashed #999;padding-bottom:12px;margin-bottom:12px;">' +
+          logo +
+          '<h1 style="font-size:20px;font-weight:700;">' +
+          (settings.nome || "Minha Empresa") +
+          "</h1><p>" +
+          settings.telefone +
+          "</p><p>" +
+          settings.endereco +
+          "</p></div>";
+        if (printType === "sale") {
+          let v = getSale(selectedSaleId),
+            c = getClient(v?.clienteId);
+          printArea.innerHTML =
+            head +
+            '<h2 style="text-align:center;font-weight:700;">CUPOM DE VENDA ' +
+            v.numero +
+            "</h2><p><b>Cliente:</b> " +
+            (c?.nome || "Consumidor") +
+            "</p><p><b>Data:</b> " +
+            formatDate(v.data) +
+            "</p><p><b>Pagamento:</b> " +
+            v.pagamento +
+            '</p><hr style="margin:12px 0;">' +
+            v.itens
+              .map(
+                (i) =>
+                  "<p>" +
+                  (getProduct(i.produtoId)?.nome || "Produto") +
+                  " x" +
+                  i.qtd +
+                  " - " +
+                  money(i.qtd * i.preco) +
+                  "</p>",
+              )
+              .join("") +
+            '<hr style="margin:12px 0;"><h3>Total: ' +
+            money(v.total) +
+            "</h3><p>Recebido: " +
+            money(v.pago || 0) +
+            "</p><p>Troco: " +
+            money(Math.max(0, (v.pago || 0) - v.total)) +
+            '</p><p style="text-align:center;margin-top:20px;">Obrigado pela preferência!</p>';
+          return;
+        }
+        let o = getOrder(selectedOrderId),
+          c = getClient(o?.clienteId);
+        printArea.innerHTML =
+          head +
+          '<h2 style="text-align:center;font-weight:700;">ORDEM DE SERVIÇO ' +
+          o.numero +
+          "</h2><p><b>Cliente:</b> " +
+          (c?.nome || "-") +
+          "</p><p><b>Telefone:</b> " +
+          (c?.telefone || "-") +
+          "</p><p><b>Aparelho:</b> " +
+          o.marca +
+          " " +
+          o.modelo +
+          "</p><p><b>Status:</b> " +
+          o.status +
+          '</p><hr style="margin:12px 0;"><p><b>Problema:</b> ' +
+          o.problema +
+          "</p><p><b>Diagnóstico:</b> " +
+          (o.diagnostico || "-") +
+          "</p><p><b>Valor:</b> " +
+          money(o.valor) +
+          '</p><br><p>Assinatura:</p><p style="margin-top:40px;border-top:1px solid #000;text-align:center;">' +
+          (c?.nome || "") +
+          "</p>";
+      }
+      function loadSettingsForm() {
+        companyName.value = settings.nome || "";
+        companyPhone.value = settings.telefone || "";
+        companyAddress.value = settings.endereco || "";
+        if (document.getElementById("picpayLink"))
+          picpayLink.value = settings.picpayLink || "";
+        if (document.getElementById("picpayPixKey"))
+          picpayPixKey.value = settings.picpayPixKey || "";
+      }
+      function saveSettings(e) {
+        e.preventDefault();
+        settings.nome = companyName.value || "Minha Empresa";
+        settings.telefone = companyPhone.value;
+        settings.endereco = companyAddress.value;
+        settings.picpayLink = document.getElementById("picpayLink")
+          ? picpayLink.value
+          : "";
+        settings.picpayPixKey = document.getElementById("picpayPixKey")
+          ? picpayPixKey.value
+          : "";
+        saveData();
+        updateCompanyUI();
+        toast("Configurações salvas.");
+      }
+      function importLogo(e) {
+        let file = e.target.files[0];
+        if (!file) return;
+        let r = new FileReader();
+        r.onload = () => {
+          settings.logo = r.result;
+          saveData();
+          updateCompanyUI();
+          toast("Logo importada.");
+        };
+        r.readAsDataURL(file);
+      }
+      function removeLogo() {
+        settings.logo = "";
+        saveData();
+        updateCompanyUI();
+        toast("Logo removida.");
+      }
+      function getSupplier(id) {
+        return fornecedores.find((x) => Number(x.id) === Number(id));
+      }
+      function renderSuppliers() {
+        if (!document.getElementById("suppliersTable")) return;
+        let q = (supplierSearch?.value || "").toLowerCase();
+        let list = fornecedores.filter((f) =>
+          (f.nome + " " + f.telefone + " " + f.categoria + " " + f.documento)
+            .toLowerCase()
+            .includes(q),
+        );
+        suppliersTable.innerHTML = list.length
+          ? ""
+          : '<tr><td colspan="5" class="px-5 py-8 text-center text-slate-500">Nenhum fornecedor.</td></tr>';
+        list.forEach(
+          (f) =>
+            (suppliersTable.innerHTML +=
+              '<tr class="hover:bg-slate-50"><td class="px-5 py-4 font-medium">' +
+              f.nome +
+              '</td><td class="px-5 py-4">' +
+              (f.telefone || "-") +
+              '</td><td class="px-5 py-4">' +
+              (f.categoria || "-") +
+              '</td><td class="px-5 py-4">' +
+              (f.documento || "-") +
+              '</td><td class="px-5 py-4 text-right"><button onclick="editSupplier(' +
+              f.id +
+              ')" class="text-primary mr-3">Editar</button><button onclick="deleteSupplier(' +
+              f.id +
+              ')" class="text-red-600">Excluir</button></td></tr>'),
+        );
+      }
+      function openSupplierModal() {
+        supplierModalTitle.innerText = "Novo Fornecedor";
+        supplierId.value = "";
+        supplierName.value = "";
+        supplierPhone.value = "";
+        supplierCategory.value = "";
+        supplierDocument.value = "";
+        supplierNotes.value = "";
+        openModal("supplierModal");
+      }
+      function saveSupplier(e) {
+        e.preventDefault();
+        let id = supplierId.value;
+        let d = {
+          id: id ? Number(id) : Date.now(),
+          nome: supplierName.value.trim(),
+          telefone: supplierPhone.value.trim(),
+          categoria: supplierCategory.value.trim(),
+          documento: supplierDocument.value.trim(),
+          obs: supplierNotes.value.trim(),
+        };
+        fornecedores = id
+          ? fornecedores.map((f) => (f.id == id ? d : f))
+          : [...fornecedores, d];
+        saveData();
+        closeModal("supplierModal");
+        renderAll();
+        toast("Fornecedor salvo.");
+      }
+      function editSupplier(id) {
+        let f = getSupplier(id);
+        openSupplierModal();
+        supplierModalTitle.innerText = "Editar Fornecedor";
+        supplierId.value = f.id;
+        supplierName.value = f.nome;
+        supplierPhone.value = f.telefone || "";
+        supplierCategory.value = f.categoria || "";
+        supplierDocument.value = f.documento || "";
+        supplierNotes.value = f.obs || "";
+      }
+      function deleteSupplier(id) {
+        if (financeiro.some((f) => f.fornecedorId == id))
+          return toast(
+            "Fornecedor possui lançamento financeiro vinculado.",
+            "error",
+          );
+        if (!confirm("Excluir fornecedor?")) return;
+        fornecedores = fornecedores.filter((f) => f.id != id);
+        saveData();
+        renderAll();
+        toast("Fornecedor excluído.");
+      }
+      function showProductHistory(id) {
+        let p = getProduct(id);
+        if (!p) return;
+        let entradas = stockMovements.filter(
+          (m) =>
+            m.produtoId == id &&
+            String(m.tipo).toLowerCase().includes("entrada"),
+        );
+        let saidasVenda = [];
+        vendas.forEach((v) => {
+          if (v.status === "Cancelada") return;
+          v.itens
+            .filter((i) => i.produtoId == id)
+            .forEach((i) =>
+              saidasVenda.push({
+                data: v.data,
+                tipo: "Venda " + v.numero,
+                qtd: i.qtd,
+                valor: i.qtd * i.preco,
+                cliente: getClient(v.clienteId)?.nome || "Consumidor",
+              }),
+            );
+        });
+        let estornos = stockMovements.filter(
+          (m) =>
+            m.produtoId == id &&
+            String(m.tipo).toLowerCase().includes("estorno"),
+        );
+        let totalEntrada = entradas.reduce((s, m) => s + Number(m.qtd || 0), 0);
+        let totalSaida = saidasVenda.reduce(
+          (s, m) => s + Number(m.qtd || 0),
+          0,
+        );
+        let faturado = saidasVenda.reduce(
+          (s, m) => s + Number(m.valor || 0),
+          0,
+        );
+        productHistoryTitle.innerText = "Histórico: " + p.nome;
+        productHistorySubtitle.innerText =
+          "SKU " +
+          p.sku +
+          " • Estoque atual " +
+          p.estoque +
+          " • Estoque mínimo " +
+          p.minimo;
+        productHistoryContent.innerHTML =
+          '<div class="grid grid-cols-1 md:grid-cols-4 gap-3"><div class="border rounded-2xl p-4"><p class="text-sm text-slate-500">Estoque atual</p><b class="text-2xl">' +
+          p.estoque +
+          '</b></div><div class="border rounded-2xl p-4"><p class="text-sm text-slate-500">Entradas</p><b class="text-2xl text-green-600">' +
+          totalEntrada +
+          '</b></div><div class="border rounded-2xl p-4"><p class="text-sm text-slate-500">Saídas por venda</p><b class="text-2xl text-red-600">' +
+          totalSaida +
+          '</b></div><div class="border rounded-2xl p-4"><p class="text-sm text-slate-500">Faturado</p><b class="text-2xl text-blue-600">' +
+          money(faturado) +
+          '</b></div></div><div><h4 class="font-bold mt-4 mb-2">Movimentações detalhadas</h4><div id="smartProductMovements" class="space-y-2"></div></div>';
+        let all = [
+          ...entradas.map((m) => ({
+            data: m.data,
+            tipo: m.tipo,
+            qtd: m.qtd,
+            obs: m.obs || "",
+            valor: 0,
+          })),
+          ...saidasVenda.map((m) => ({
+            data: m.data,
+            tipo: m.tipo,
+            qtd: -m.qtd,
+            obs: m.cliente,
+            valor: m.valor,
+          })),
+          ...estornos.map((m) => ({
+            data: m.data,
+            tipo: m.tipo,
+            qtd: m.qtd,
+            obs: m.obs || "",
+            valor: 0,
+          })),
+        ].sort((a, b) => String(b.data).localeCompare(String(a.data)));
+        smartProductMovements.innerHTML = all.length
+          ? ""
+          : '<p class="text-slate-500">Sem movimentações para este produto.</p>';
+        all.forEach(
+          (m) =>
+            (smartProductMovements.innerHTML +=
+              '<div class="flex flex-col md:flex-row md:items-center md:justify-between gap-2 border rounded-2xl p-3"><div><b>' +
+              m.tipo +
+              '</b><p class="text-sm text-slate-500">' +
+              formatDate(m.data) +
+              " • " +
+              (m.obs || "-") +
+              '</p></div><div class="text-right"><b class="' +
+              (m.qtd >= 0 ? "text-green-600" : "text-red-600") +
+              '">' +
+              (m.qtd >= 0 ? "+" : "") +
+              m.qtd +
+              ' un.</b><p class="text-sm text-slate-500">' +
+              (m.valor ? money(m.valor) : "") +
+              "</p></div></div>"),
+        );
+        openModal("productHistoryModal");
+      }
+      function renderAll() {
+        updateCompanyUI();
+        populateSelects();
+        renderDashboard();
+        renderClients();
+        renderSuppliers();
+        renderOrders();
+        renderProducts();
+        renderPDVProducts();
+        renderCart();
+        renderFinance();
+        renderReports();
+        loadSettingsForm();
+        if (window.lucide) lucide.createIcons();
+      }
+      loadData();
+      setTimeout(() => {
+        skeletonBar.classList.add("hidden");
+        dashboardReal.classList.remove("hidden");
+      }, 700);
+      renderAll();
+      showPage("dashboard");
+    </script>
+  </body>
+</html>
